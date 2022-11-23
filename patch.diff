@@ -1,244 +1,258 @@
-diff --git a/RefactoringIdiomsOutputdir/algorithms.py b/codegen/algorithms.py
-index 6bd5734..5a0fa75 100644
---- a/RefactoringIdiomsOutputdir/algorithms.py
-+++ b/codegen/algorithms.py
-@@ -58,16 +58,20 @@ def newtons_method(expr, wrt, atol=1e-12, delta=None, debug=False,
+diff --git a/codegen/.DS_Store b/codegen/.DS_Store
+deleted file mode 100644
+index 5008ddfcf53c02e82d7eee2e57c38e5672ef89f6..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 6148
+zcmeH~Jr2S!425mzP>H1@V-^m;4Wg<&0T*E43hX&L&p$$qDprKhvt+--jT7}7np#A3
+zem<@ulZcFPQ@L2!n>{z**<q8>++&mCkOWA81W14cNZ<zv;LbK1Poaz?KmsK2CSc!(
+z0ynLxE!0092;Krf2c+FF_Fe*7ECH>lEfg7;MkzE(HCqgga^y>{tEnwC%0;vJ&^%eQ
+zLs35+`xjp>T0<F0fCPF1$Cyrb|F7^5{eNG?83~ZUUlGt@xh*qZDeu<Z%US-OSsOPv
+j)R!Z4KLME7ReXlK;d!wEw5GODWMKRea10D2@KpjYNUI8I
+
+diff --git a/codegen/algorithms.py b/RefactoringIdiomsOutputdir/algorithms.py
+index 5a0fa75..6bd5734 100644
+--- a/codegen/algorithms.py
++++ b/RefactoringIdiomsOutputdir/algorithms.py
+@@ -58,20 +58,16 @@ def newtons_method(expr, wrt, atol=1e-12, delta=None, debug=False,
      """
  
      if delta is None:
--        delta , Wrapper , name_d  = Dummy(), Scope, 'delta'
-+        delta = Dummy()
-+        Wrapper = Scope
-+        name_d = 'delta'
+-        delta = Dummy()
+-        Wrapper = Scope
+-        name_d = 'delta'
++        delta , Wrapper , name_d  = Dummy(), Scope, 'delta'
      else:
--        Wrapper , name_d  = lambda x: x, delta.name
-+        Wrapper = lambda x: x
-+        name_d = delta.name
+-        Wrapper = lambda x: x
+-        name_d = delta.name
++        Wrapper , name_d  = lambda x: x, delta.name
  
      delta_expr = -expr/expr.diff(wrt)
      whl_bdy = [Assignment(delta, delta_expr), AddAugmentedAssignment(wrt, delta)]
      if debug:
          prnt = Print([wrt, delta], r"{}=%12.5g {}=%12.5g\n".format(wrt.name, name_d))
          whl_bdy = [whl_bdy[0], prnt] + whl_bdy[1:]
--    req , declars  = Gt(Abs(delta), atol), [Declaration(Variable(delta, type=real, value=oo))]
-+    req = Gt(Abs(delta), atol)
-+    declars = [Declaration(Variable(delta, type=real, value=oo))]
+-    req = Gt(Abs(delta), atol)
+-    declars = [Declaration(Variable(delta, type=real, value=oo))]
++    req , declars  = Gt(Abs(delta), atol), [Declaration(Variable(delta, type=real, value=oo))]
      if itermax is not None:
          counter = counter or Dummy(integer=True)
          v_counter = Variable.deduced(counter, 0)
-@@ -142,5 +146,6 @@ def newtons_method_function(expr, wrt, params=None, func_name="newton", attrs=Tu
+@@ -146,6 +142,5 @@ def newtons_method_function(expr, wrt, params=None, func_name="newton", attrs=Tu
      not_in_params = expr.free_symbols.difference({_symbol_of(p) for p in params})
      if not_in_params:
          raise ValueError("Missing symbols in params: %s" % ', '.join(map(str, not_in_params)))
--    declars , body  = tuple((Variable(p, real) for p in params)), CodeBlock(algo, Return(wrt))
-+    declars = tuple(Variable(p, real) for p in params)
-+    body = CodeBlock(algo, Return(wrt))
+-    declars = tuple(Variable(p, real) for p in params)
+-    body = CodeBlock(algo, Return(wrt))
++    declars , body  = tuple((Variable(p, real) for p in params)), CodeBlock(algo, Return(wrt))
      return FunctionDefinition(real, func_name, declars, body, attrs=attrs)
-diff --git a/RefactoringIdiomsOutputdir/approximations.py b/codegen/approximations.py
-index 9c3f0e8..4f15266 100644
---- a/RefactoringIdiomsOutputdir/approximations.py
-+++ b/codegen/approximations.py
-@@ -53,7 +53,8 @@ class SumApprox(Optimization):
+diff --git a/codegen/approximations.py b/RefactoringIdiomsOutputdir/approximations.py
+index 4f15266..9c3f0e8 100644
+--- a/codegen/approximations.py
++++ b/RefactoringIdiomsOutputdir/approximations.py
+@@ -53,8 +53,7 @@ class SumApprox(Optimization):
  
      def __init__(self, bounds, reltol, **kwargs):
          super().__init__(**kwargs)
--        self.bounds , self.reltol  = bounds, reltol
-+        self.bounds = bounds
-+        self.reltol = reltol
+-        self.bounds = bounds
+-        self.reltol = reltol
++        self.bounds , self.reltol  = bounds, reltol
  
      def __call__(self, expr):
          return expr.factor().replace(self.query, lambda arg: self.value(arg))
-@@ -83,13 +84,17 @@ class SumApprox(Optimization):
+@@ -84,17 +83,13 @@ class SumApprox(Optimization):
                  return add
  
          if all(term.is_number or term in self.bounds for term in add.args):
--            bounds , largest_abs_guarantee  = [(term, term) if term.is_number else self.bounds[term] for term in add.args], 0
-+            bounds = [(term, term) if term.is_number else self.bounds[term] for term in add.args]
-+            largest_abs_guarantee = 0
+-            bounds = [(term, term) if term.is_number else self.bounds[term] for term in add.args]
+-            largest_abs_guarantee = 0
++            bounds , largest_abs_guarantee  = [(term, term) if term.is_number else self.bounds[term] for term in add.args], 0
              for lo, hi in bounds:
                  if lo <= 0 <= hi:
                      continue
                  largest_abs_guarantee = max(largest_abs_guarantee,
                                              min(abs(lo), abs(hi)))
--            new_terms = [term for (term, (lo, hi)) in zip(add.args, bounds) if max(abs(lo), abs(hi)) >= largest_abs_guarantee * self.reltol]
-+            new_terms = []
-+            for term, (lo, hi) in zip(add.args, bounds):
-+                if max(abs(lo), abs(hi)) >= largest_abs_guarantee*self.reltol:
-+                    new_terms.append(term)
+-            new_terms = []
+-            for term, (lo, hi) in zip(add.args, bounds):
+-                if max(abs(lo), abs(hi)) >= largest_abs_guarantee*self.reltol:
+-                    new_terms.append(term)
++            new_terms = [term for (term, (lo, hi)) in zip(add.args, bounds) if max(abs(lo), abs(hi)) >= largest_abs_guarantee * self.reltol]
              return add.func(*new_terms)
          else:
              return add
-@@ -135,7 +140,9 @@ class SeriesApprox(Optimization):
+@@ -140,9 +135,7 @@ class SeriesApprox(Optimization):
      """
      def __init__(self, bounds, reltol, max_order=4, n_point_checks=4, **kwargs):
          super().__init__(**kwargs)
--        self.bounds , self.reltol , self.max_order  = bounds, reltol, max_order
-+        self.bounds = bounds
-+        self.reltol = reltol
-+        self.max_order = max_order
+-        self.bounds = bounds
+-        self.reltol = reltol
+-        self.max_order = max_order
++        self.bounds , self.reltol , self.max_order  = bounds, reltol, max_order
          if n_point_checks % 2 == 1:
              raise ValueError("Checking the solution at expansion point is not helpful")
          self.n_point_checks = n_point_checks
-@@ -156,12 +163,15 @@ class SeriesApprox(Optimization):
+@@ -163,15 +156,12 @@ class SeriesApprox(Optimization):
          if symb not in self.bounds:
              return fexpr
          lo, hi = self.bounds[symb]
--        x0 , cheapest  = (lo + hi) / 2, None
-+        x0 = (lo + hi)/2
-+        cheapest = None
+-        x0 = (lo + hi)/2
+-        cheapest = None
++        x0 , cheapest  = (lo + hi) / 2, None
          for n in range(self.max_order+1, 0, -1):
--            fseri , n_ok  = fexpr.series(symb, x0=x0, n=n).removeO(), True
-+            fseri = fexpr.series(symb, x0=x0, n=n).removeO()
-+            n_ok = True
+-            fseri = fexpr.series(symb, x0=x0, n=n).removeO()
+-            n_ok = True
++            fseri , n_ok  = fexpr.series(symb, x0=x0, n=n).removeO(), True
              for idx in range(self.n_point_checks):
                  x = lo + idx*(hi - lo)/(self.n_point_checks - 1)
--                val , ref  = fseri.xreplace({symb: x}), fexpr.xreplace({symb: x})
-+                val = fseri.xreplace({symb: x})
-+                ref = fexpr.xreplace({symb: x})
+-                val = fseri.xreplace({symb: x})
+-                ref = fexpr.xreplace({symb: x})
++                val , ref  = fseri.xreplace({symb: x}), fexpr.xreplace({symb: x})
                  if abs((1 - val/ref).evalf(self._prec)) > self.reltol:
                      n_ok = False
                      break
-diff --git a/RefactoringIdiomsOutputdir/ast.py b/codegen/ast.py
-index 72112af..17531b3 100644
---- a/RefactoringIdiomsOutputdir/ast.py
-+++ b/codegen/ast.py
+diff --git a/codegen/ast.py b/RefactoringIdiomsOutputdir/ast.py
+index 17531b3..72112af 100644
+--- a/codegen/ast.py
++++ b/RefactoringIdiomsOutputdir/ast.py
 @@ -200,7 +200,7 @@ class Token(CodegenAST):
      def _construct(cls, attr, arg):
          """ Construct an attribute value from argument passed to ``__new__()``. """
          # arg may be ``NoneToken()``, so comparison is done using == instead of ``is`` operator
--        if not arg:
-+        if arg == None:
+-        if arg == None:
++        if not arg:
              return cls.defaults.get(attr, none)
          else:
              if isinstance(arg, Dummy):  # SymPy's replace uses Dummy instances
-@@ -290,8 +290,11 @@ class Token(CodegenAST):
+@@ -290,11 +290,8 @@ class Token(CodegenAST):
  
      def _sympyrepr(self, printer, *args, joiner=', ', **kwargs):
          from sympy.printing.printer import printer_context
--        exclude , values , indent_level , arg_reprs  = kwargs.get('exclude', ()), [getattr(self, k) for k in self._fields], printer._context.get('indent_level', 0), []
-+        exclude = kwargs.get('exclude', ())
-+        values = [getattr(self, k) for k in self._fields]
-+        indent_level = printer._context.get('indent_level', 0)
+-        exclude = kwargs.get('exclude', ())
+-        values = [getattr(self, k) for k in self._fields]
+-        indent_level = printer._context.get('indent_level', 0)
++        exclude , values , indent_level , arg_reprs  = kwargs.get('exclude', ()), [getattr(self, k) for k in self._fields], printer._context.get('indent_level', 0), []
  
-+        arg_reprs = []
+-        arg_reprs = []
  
          for i, (attr, value) in enumerate(zip(self._fields, values)):
              if attr in exclude:
-@@ -407,7 +410,8 @@ class AssignmentBase(CodegenAST):
+@@ -410,8 +407,7 @@ class AssignmentBase(CodegenAST):
      """
  
      def __new__(cls, lhs, rhs):
--        lhs , rhs  = _sympify(lhs), _sympify(rhs)
-+        lhs = _sympify(lhs)
-+        rhs = _sympify(rhs)
+-        lhs = _sympify(lhs)
+-        rhs = _sympify(rhs)
++        lhs , rhs  = _sympify(lhs), _sympify(rhs)
  
          cls._check_args(lhs, rhs)
  
-@@ -441,7 +445,8 @@ class AssignmentBase(CodegenAST):
+@@ -445,8 +441,7 @@ class AssignmentBase(CodegenAST):
          # Indexed types implement shape, but don't define it until later. This
          # causes issues in assignment validation. For now, matrices are defined
          # as anything with a shape that is not an Indexed
--        lhs_is_mat , rhs_is_mat  = hasattr(lhs, 'shape') and (not isinstance(lhs, Indexed)), hasattr(rhs, 'shape') and (not isinstance(rhs, Indexed))
-+        lhs_is_mat = hasattr(lhs, 'shape') and not isinstance(lhs, Indexed)
-+        rhs_is_mat = hasattr(rhs, 'shape') and not isinstance(rhs, Indexed)
+-        lhs_is_mat = hasattr(lhs, 'shape') and not isinstance(lhs, Indexed)
+-        rhs_is_mat = hasattr(rhs, 'shape') and not isinstance(rhs, Indexed)
++        lhs_is_mat , rhs_is_mat  = hasattr(lhs, 'shape') and (not isinstance(lhs, Indexed)), hasattr(rhs, 'shape') and (not isinstance(rhs, Indexed))
  
          # If lhs and rhs have same structure, then this assignment is ok
          if lhs_is_mat:
-@@ -625,7 +630,8 @@ class CodeBlock(CodegenAST):
+@@ -630,8 +625,7 @@ class CodeBlock(CodegenAST):
  
      """
      def __new__(cls, *args):
--        left_hand_sides , right_hand_sides  = [], []
-+        left_hand_sides = []
-+        right_hand_sides = []
+-        left_hand_sides = []
+-        right_hand_sides = []
++        left_hand_sides , right_hand_sides  = [], []
          for i in args:
              if isinstance(i, Assignment):
                  lhs, rhs = i.args
-@@ -634,7 +640,8 @@ class CodeBlock(CodegenAST):
+@@ -640,8 +634,7 @@ class CodeBlock(CodegenAST):
  
          obj = CodegenAST.__new__(cls, *args)
  
--        obj.left_hand_sides , obj.right_hand_sides  = Tuple(*left_hand_sides), Tuple(*right_hand_sides)
-+        obj.left_hand_sides = Tuple(*left_hand_sides)
-+        obj.right_hand_sides = Tuple(*right_hand_sides)
+-        obj.left_hand_sides = Tuple(*left_hand_sides)
+-        obj.right_hand_sides = Tuple(*right_hand_sides)
++        obj.left_hand_sides , obj.right_hand_sides  = Tuple(*left_hand_sides), Tuple(*right_hand_sides)
          return obj
  
      def __iter__(self):
-@@ -715,10 +722,11 @@ class CodeBlock(CodegenAST):
+@@ -722,11 +715,10 @@ class CodeBlock(CodegenAST):
          # enumerate keeps nodes in the same order they are already in if
          # possible. It will also allow us to handle duplicate assignments to
          # the same variable when those are implemented.
--        A , var_map  = list(enumerate(assignments)), defaultdict(list)
-+        A = list(enumerate(assignments))
+-        A = list(enumerate(assignments))
++        A , var_map  = list(enumerate(assignments)), defaultdict(list)
  
          # var_map = {variable: [nodes for which this variable is assigned to]}
          # like {x: [(1, x := y + z), (4, x := 2 * w)], ...}
-+        var_map = defaultdict(list)
+-        var_map = defaultdict(list)
          for node in A:
              i, a = node
              var_map[a.lhs].append(node)
-@@ -794,7 +802,9 @@ class CodeBlock(CodegenAST):
+@@ -802,9 +794,7 @@ class CodeBlock(CodegenAST):
              symbols=symbols, optimizations=optimizations, postprocess=postprocess,
              order=order)
  
--        new_block , new_assignments  = [Assignment(var, expr) for (var, expr) in zip(self.left_hand_sides, reduced_exprs)], [Assignment(var, expr) for (var, expr) in replacements]
-+        new_block = [Assignment(var, expr) for var, expr in
-+            zip(self.left_hand_sides, reduced_exprs)]
-+        new_assignments = [Assignment(var, expr) for var, expr in replacements]
+-        new_block = [Assignment(var, expr) for var, expr in
+-            zip(self.left_hand_sides, reduced_exprs)]
+-        new_assignments = [Assignment(var, expr) for var, expr in replacements]
++        new_block , new_assignments  = [Assignment(var, expr) for (var, expr) in zip(self.left_hand_sides, reduced_exprs)], [Assignment(var, expr) for (var, expr) in replacements]
          return self.topological_sort(new_assignments + new_block)
  
  
-@@ -1105,8 +1115,10 @@ class Type(Token):
+@@ -1115,10 +1105,8 @@ class Type(Token):
          0.123456789012345649
  
          """
--        val , ten , exp10  = sympify(value), Integer(10), getattr(self, 'decimal_dig', None)
-+        val = sympify(value)
+-        val = sympify(value)
++        val , ten , exp10  = sympify(value), Integer(10), getattr(self, 'decimal_dig', None)
  
-+        ten = Integer(10)
-+        exp10 = getattr(self, 'decimal_dig', None)
+-        ten = Integer(10)
+-        exp10 = getattr(self, 'decimal_dig', None)
  
          if rtol is None:
              rtol = 1e-15 if exp10 is None else 2.0*ten**(-exp10)
-@@ -1125,7 +1137,8 @@ class Type(Token):
+@@ -1137,8 +1125,7 @@ class Type(Token):
  
      def _latex(self, printer):
          from sympy.printing.latex import latex_escape
--        type_name , name  = latex_escape(self.__class__.__name__), latex_escape(self.name.text)
-+        type_name = latex_escape(self.__class__.__name__)
-+        name = latex_escape(self.name.text)
+-        type_name = latex_escape(self.__class__.__name__)
+-        name = latex_escape(self.name.text)
++        type_name , name  = latex_escape(self.__class__.__name__), latex_escape(self.name.text)
          return r"\text{{{}}}\left(\texttt{{{}}}\right)".format(type_name, name)
  
  
-diff --git a/RefactoringIdiomsOutputdir/cutils.py b/codegen/cutils.py
-index 62bbbf1..2182ac1 100644
---- a/RefactoringIdiomsOutputdir/cutils.py
-+++ b/codegen/cutils.py
-@@ -3,5 +3,6 @@ from sympy.printing.c import C99CodePrinter
+diff --git a/codegen/cutils.py b/RefactoringIdiomsOutputdir/cutils.py
+index 2182ac1..62bbbf1 100644
+--- a/codegen/cutils.py
++++ b/RefactoringIdiomsOutputdir/cutils.py
+@@ -3,6 +3,5 @@ from sympy.printing.c import C99CodePrinter
  def render_as_source_file(content, Printer=C99CodePrinter, settings=None):
      """ Renders a C source file (with required #include statements) """
      printer = Printer(settings or {})
--    code_str , includes  = printer.doprint(content), '\n'.join(['#include <%s>' % h for h in printer.headers])
-+    code_str = printer.doprint(content)
-+    includes = '\n'.join(['#include <%s>' % h for h in printer.headers])
+-    code_str = printer.doprint(content)
+-    includes = '\n'.join(['#include <%s>' % h for h in printer.headers])
++    code_str , includes  = printer.doprint(content), '\n'.join(['#include <%s>' % h for h in printer.headers])
      return includes + '\n\n' + code_str
-diff --git a/RefactoringIdiomsOutputdir/fnodes.py b/codegen/fnodes.py
-index 5d68a4a..6d38a60 100644
---- a/RefactoringIdiomsOutputdir/fnodes.py
-+++ b/codegen/fnodes.py
+diff --git a/codegen/fnodes.py b/RefactoringIdiomsOutputdir/fnodes.py
+index 6d38a60..5d68a4a 100644
+--- a/codegen/fnodes.py
++++ b/RefactoringIdiomsOutputdir/fnodes.py
 @@ -281,13 +281,13 @@ class Extent(Basic):
          if len(args) == 2:
              low, high = args
              return Basic.__new__(cls, sympify(low), sympify(high))
--        elif not len(args) or (len(args) == 1 and args[0] in (':', None)):
-+        elif len(args) == 0 or (len(args) == 1 and args[0] in (':', None)):
+-        elif len(args) == 0 or (len(args) == 1 and args[0] in (':', None)):
++        elif not len(args) or (len(args) == 1 and args[0] in (':', None)):
              return Basic.__new__(cls)  # assumed shape
          else:
              raise ValueError("Expected 0 or 2 args (or one argument == None or ':')")
  
      def _sympystr(self, printer):
--        if not len(self.args):
-+        if len(self.args) == 0:
+-        if len(self.args) == 0:
++        if not len(self.args):
              return ':'
          return ":".join(str(arg) for arg in self.args)
  
@@ -246,355 +260,355 @@ index 5d68a4a..6d38a60 100644
              parameters.append(Extent(*arg))
          else:
              parameters.append(sympify(arg))
--    if not len(args):
-+    if len(args) == 0:
+-    if len(args) == 0:
++    if not len(args):
          raise ValueError("Need at least one dimension")
      return Attribute('dimension', parameters)
  
-diff --git a/RefactoringIdiomsOutputdir/futils.py b/codegen/futils.py
-index fc3072f..4a1f575 100644
---- a/RefactoringIdiomsOutputdir/futils.py
-+++ b/codegen/futils.py
-@@ -26,11 +26,14 @@ def render_as_module(definitions, name, declarations=(), printer_settings=None):
+diff --git a/codegen/futils.py b/RefactoringIdiomsOutputdir/futils.py
+index 4a1f575..fc3072f 100644
+--- a/codegen/futils.py
++++ b/RefactoringIdiomsOutputdir/futils.py
+@@ -26,14 +26,11 @@ def render_as_module(definitions, name, declarations=(), printer_settings=None):
  
      """
      printer_settings = printer_settings or {'standard': 2003, 'source_format': 'free'}
--    printer , dummy  = FCodePrinter(printer_settings), Dummy()
-+    printer = FCodePrinter(printer_settings)
-+    dummy = Dummy()
+-    printer = FCodePrinter(printer_settings)
+-    dummy = Dummy()
++    printer , dummy  = FCodePrinter(printer_settings), Dummy()
      if isinstance(definitions, Module):
          raise ValueError("This function expects to construct a module on its own.")
      mod = Module(name, chain(declarations, [dummy]), definitions)
--    fstr , module_use_str  = printer.doprint(mod), '   %s\n' % '   \n'.join(['use %s, only: %s' % (k, ', '.join(v)) for (k, v) in printer.module_uses.items()])
-+    fstr = printer.doprint(mod)
-+    module_use_str = '   %s\n' % '   \n'.join(['use %s, only: %s' % (k, ', '.join(v)) for
-+                                                k, v in printer.module_uses.items()])
+-    fstr = printer.doprint(mod)
+-    module_use_str = '   %s\n' % '   \n'.join(['use %s, only: %s' % (k, ', '.join(v)) for
+-                                                k, v in printer.module_uses.items()])
++    fstr , module_use_str  = printer.doprint(mod), '   %s\n' % '   \n'.join(['use %s, only: %s' % (k, ', '.join(v)) for (k, v) in printer.module_uses.items()])
      module_use_str += '   implicit none\n'
      module_use_str += '   private\n'
      module_use_str += '   public %s\n' % ', '.join([str(node.name) for node in definitions if getattr(node, 'name', None)])
-diff --git a/RefactoringIdiomsOutputdir/rewriting.py b/codegen/rewriting.py
-index 67541cd..a40480d 100644
---- a/RefactoringIdiomsOutputdir/rewriting.py
-+++ b/codegen/rewriting.py
-@@ -62,7 +62,8 @@ class Optimization:
+diff --git a/codegen/rewriting.py b/RefactoringIdiomsOutputdir/rewriting.py
+index a40480d..67541cd 100644
+--- a/codegen/rewriting.py
++++ b/RefactoringIdiomsOutputdir/rewriting.py
+@@ -62,8 +62,7 @@ class Optimization:
  
      """
      def __init__(self, cost_function=None, priority=1):
--        self.cost_function , self.priority  = cost_function, priority
-+        self.cost_function = cost_function
-+        self.priority=priority
+-        self.cost_function = cost_function
+-        self.priority=priority
++        self.cost_function , self.priority  = cost_function, priority
  
      def cheapest(self, *args):
          return sorted(args, key=self.cost_function)[0]
-@@ -102,7 +103,8 @@ class ReplaceOptim(Optimization):
+@@ -103,8 +102,7 @@ class ReplaceOptim(Optimization):
  
      def __init__(self, query, value, **kwargs):
          super().__init__(**kwargs)
--        self.query , self.value  = query, value
-+        self.query = query
-+        self.value = value
+-        self.query = query
+-        self.value = value
++        self.query , self.value  = query, value
  
      def __call__(self, expr):
          return expr.replace(self.query, self.value)
-@@ -222,7 +224,9 @@ class FuncMinusOneOptim(ReplaceOptim):
+@@ -224,9 +222,7 @@ class FuncMinusOneOptim(ReplaceOptim):
          weight = 10  # <-- this is an arbitrary number (heuristic)
          super().__init__(lambda e: e.is_Add, self.replace_in_Add,
                           cost_function=lambda expr: expr.count_ops() - weight*expr.count(func_m_1))
--        self.func , self.func_m_1 , self.opportunistic  = func, func_m_1, opportunistic
-+        self.func = func
-+        self.func_m_1 = func_m_1
-+        self.opportunistic = opportunistic
+-        self.func = func
+-        self.func_m_1 = func_m_1
+-        self.opportunistic = opportunistic
++        self.func , self.func_m_1 , self.opportunistic  = func, func_m_1, opportunistic
  
      def _group_Add_terms(self, add):
          numbers, non_num = sift(add.args, lambda arg: arg.is_number, binary=True)
-@@ -233,13 +237,13 @@ class FuncMinusOneOptim(ReplaceOptim):
+@@ -237,13 +233,13 @@ class FuncMinusOneOptim(ReplaceOptim):
      def replace_in_Add(self, e):
          """ passed as second argument to Basic.replace(...) """
          numsum, terms_with_func, other_non_num_terms = self._group_Add_terms(e)
--        if not numsum:
-+        if numsum == 0:
+-        if numsum == 0:
++        if not numsum:
              return e
          substituted, untouched = [], []
          for with_func in terms_with_func:
              if with_func.is_Mul:
                  func, coeff = sift(with_func.args, lambda arg: arg.func == self.func, binary=True)
--                if len(func) == 1 == len(coeff):
-+                if len(func) == 1 and len(coeff) == 1:
+-                if len(func) == 1 and len(coeff) == 1:
++                if len(func) == 1 == len(coeff):
                      func, coeff = func[0], coeff[0]
                  else:
                      coeff = None
-@@ -263,7 +267,8 @@ class FuncMinusOneOptim(ReplaceOptim):
+@@ -267,8 +263,7 @@ class FuncMinusOneOptim(ReplaceOptim):
          return e.func(numsum, *substituted, *untouched, *other_non_num_terms)
  
      def __call__(self, expr):
--        alt1 , alt2  = super().__call__(expr), super().__call__(expr.factor())
-+        alt1 = super().__call__(expr)
-+        alt2 = super().__call__(expr.factor())
+-        alt1 = super().__call__(expr)
+-        alt2 = super().__call__(expr.factor())
++        alt1 , alt2  = super().__call__(expr), super().__call__(expr.factor())
          return self.cheapest(alt1, alt2)
  
  
-diff --git a/RefactoringIdiomsOutputdir/tests/test_algorithms.py b/codegen/tests/test_algorithms.py
-index 26e1646..240d2c7 100644
---- a/RefactoringIdiomsOutputdir/tests/test_algorithms.py
-+++ b/codegen/tests/test_algorithms.py
-@@ -72,7 +72,8 @@ def test_newtons_method_function__pycode():
+diff --git a/codegen/tests/test_algorithms.py b/RefactoringIdiomsOutputdir/tests/test_algorithms.py
+index 240d2c7..26e1646 100644
+--- a/codegen/tests/test_algorithms.py
++++ b/RefactoringIdiomsOutputdir/tests/test_algorithms.py
+@@ -72,8 +72,7 @@ def test_newtons_method_function__pycode():
      x = sp.Symbol('x', real=True)
      expr = sp.cos(x) - x**3
      func = newtons_method_function(expr, x)
--    py_mod , namespace  = py_module(func), {}
-+    py_mod = py_module(func)
-+    namespace = {}
+-    py_mod = py_module(func)
+-    namespace = {}
++    py_mod , namespace  = py_module(func), {}
      exec(py_mod, namespace, namespace)
      res = eval('newton(0.5)', namespace)
      assert abs(res - 0.865474033102) < 1e-12
-diff --git a/RefactoringIdiomsOutputdir/tests/test_applications.py b/codegen/tests/test_applications.py
-index 609b86b..8fa6804 100644
---- a/RefactoringIdiomsOutputdir/tests/test_applications.py
-+++ b/codegen/tests/test_applications.py
-@@ -26,7 +26,8 @@ def _mk_func1():
+diff --git a/codegen/tests/test_applications.py b/RefactoringIdiomsOutputdir/tests/test_applications.py
+index 8fa6804..609b86b 100644
+--- a/codegen/tests/test_applications.py
++++ b/RefactoringIdiomsOutputdir/tests/test_applications.py
+@@ -26,8 +26,7 @@ def _mk_func1():
  
  
  def _render_compile_import(funcdef, build_dir):
--    code_str , declar  = render_as_source_file(funcdef, settings=dict(contract=False)), ccode(FunctionPrototype.from_FunctionDefinition(funcdef))
-+    code_str = render_as_source_file(funcdef, settings=dict(contract=False))
-+    declar = ccode(FunctionPrototype.from_FunctionDefinition(funcdef))
+-    code_str = render_as_source_file(funcdef, settings=dict(contract=False))
+-    declar = ccode(FunctionPrototype.from_FunctionDefinition(funcdef))
++    code_str , declar  = render_as_source_file(funcdef, settings=dict(contract=False)), ccode(FunctionPrototype.from_FunctionDefinition(funcdef))
      return compile_link_import_strings([
          ('our_test_func.c', code_str),
          ('_our_test_func.pyx', ("#cython: language_level={}\n".format("3") +
-diff --git a/RefactoringIdiomsOutputdir/tests/test_approximations.py b/codegen/tests/test_approximations.py
-index 8535b57..9c679e2 100644
---- a/RefactoringIdiomsOutputdir/tests/test_approximations.py
-+++ b/codegen/tests/test_approximations.py
-@@ -7,34 +7,47 @@ from sympy.codegen.approximations import SumApprox, SeriesApprox
+diff --git a/codegen/tests/test_approximations.py b/RefactoringIdiomsOutputdir/tests/test_approximations.py
+index 9c679e2..8535b57 100644
+--- a/codegen/tests/test_approximations.py
++++ b/RefactoringIdiomsOutputdir/tests/test_approximations.py
+@@ -7,47 +7,34 @@ from sympy.codegen.approximations import SumApprox, SeriesApprox
  
  def test_SumApprox_trivial():
      x = symbols('x')
--    expr1 , sum_approx  = 1 + x, SumApprox(bounds={x: (-1e-20, 1e-20)}, reltol=1e-16)
-+    expr1 = 1 + x
-+    sum_approx = SumApprox(bounds={x: (-1e-20, 1e-20)}, reltol=1e-16)
+-    expr1 = 1 + x
+-    sum_approx = SumApprox(bounds={x: (-1e-20, 1e-20)}, reltol=1e-16)
++    expr1 , sum_approx  = 1 + x, SumApprox(bounds={x: (-1e-20, 1e-20)}, reltol=1e-16)
      apx1 = optimize(expr1, [sum_approx])
--    assert not apx1 - 1
-+    assert apx1 - 1 == 0
+-    assert apx1 - 1 == 0
++    assert not apx1 - 1
  
  
  def test_SumApprox_monotone_terms():
      x, y, z = symbols('x y z')
--    expr1 , bnds1  = exp(z) * (x ** 2 + y ** 2 + 1), {x: (0, 0.001), y: (100, 1000)}
--    sum_approx_m2 , sum_approx_m5 , sum_approx_m11  = SumApprox(bounds=bnds1, reltol=0.01), SumApprox(bounds=bnds1, reltol=1e-05), SumApprox(bounds=bnds1, reltol=1e-11)
--    assert not (optimize(expr1, [sum_approx_m2]) / exp(z) - y ** 2).simplify()
--    assert not (optimize(expr1, [sum_approx_m5]) / exp(z) - (y ** 2 + 1)).simplify()
--    assert not (optimize(expr1, [sum_approx_m11]) / exp(z) - (y ** 2 + 1 + x ** 2)).simplify()
-+    expr1 = exp(z)*(x**2 + y**2 + 1)
-+    bnds1 = {x: (0, 1e-3), y: (100, 1000)}
-+    sum_approx_m2 = SumApprox(bounds=bnds1, reltol=1e-2)
-+    sum_approx_m5 = SumApprox(bounds=bnds1, reltol=1e-5)
-+    sum_approx_m11 = SumApprox(bounds=bnds1, reltol=1e-11)
-+    assert (optimize(expr1, [sum_approx_m2])/exp(z) - (y**2)).simplify() == 0
-+    assert (optimize(expr1, [sum_approx_m5])/exp(z) - (y**2 + 1)).simplify() == 0
-+    assert (optimize(expr1, [sum_approx_m11])/exp(z) - (y**2 + 1 + x**2)).simplify() == 0
+-    expr1 = exp(z)*(x**2 + y**2 + 1)
+-    bnds1 = {x: (0, 1e-3), y: (100, 1000)}
+-    sum_approx_m2 = SumApprox(bounds=bnds1, reltol=1e-2)
+-    sum_approx_m5 = SumApprox(bounds=bnds1, reltol=1e-5)
+-    sum_approx_m11 = SumApprox(bounds=bnds1, reltol=1e-11)
+-    assert (optimize(expr1, [sum_approx_m2])/exp(z) - (y**2)).simplify() == 0
+-    assert (optimize(expr1, [sum_approx_m5])/exp(z) - (y**2 + 1)).simplify() == 0
+-    assert (optimize(expr1, [sum_approx_m11])/exp(z) - (y**2 + 1 + x**2)).simplify() == 0
++    expr1 , bnds1  = exp(z) * (x ** 2 + y ** 2 + 1), {x: (0, 0.001), y: (100, 1000)}
++    sum_approx_m2 , sum_approx_m5 , sum_approx_m11  = SumApprox(bounds=bnds1, reltol=0.01), SumApprox(bounds=bnds1, reltol=1e-05), SumApprox(bounds=bnds1, reltol=1e-11)
++    assert not (optimize(expr1, [sum_approx_m2]) / exp(z) - y ** 2).simplify()
++    assert not (optimize(expr1, [sum_approx_m5]) / exp(z) - (y ** 2 + 1)).simplify()
++    assert not (optimize(expr1, [sum_approx_m11]) / exp(z) - (y ** 2 + 1 + x ** 2)).simplify()
  
  
  def test_SeriesApprox_trivial():
      x, z = symbols('x z')
      for factor in [1, exp(z)]:
          x = symbols('x')
--        expr1 , bnds1  = exp(x) * factor, {x: (-1, 1)}
--        series_approx_50 , series_approx_10 , series_approx_05 , c  = SeriesApprox(bounds=bnds1, reltol=0.5), SeriesApprox(bounds=bnds1, reltol=0.1), SeriesApprox(bounds=bnds1, reltol=0.05), (bnds1[x][1] + bnds1[x][0]) / 2
-+        expr1 = exp(x)*factor
-+        bnds1 = {x: (-1, 1)}
-+        series_approx_50 = SeriesApprox(bounds=bnds1, reltol=0.50)
-+        series_approx_10 = SeriesApprox(bounds=bnds1, reltol=0.10)
-+        series_approx_05 = SeriesApprox(bounds=bnds1, reltol=0.05)
-+        c = (bnds1[x][1] + bnds1[x][0])/2  # 0.0
+-        expr1 = exp(x)*factor
+-        bnds1 = {x: (-1, 1)}
+-        series_approx_50 = SeriesApprox(bounds=bnds1, reltol=0.50)
+-        series_approx_10 = SeriesApprox(bounds=bnds1, reltol=0.10)
+-        series_approx_05 = SeriesApprox(bounds=bnds1, reltol=0.05)
+-        c = (bnds1[x][1] + bnds1[x][0])/2  # 0.0
++        expr1 , bnds1  = exp(x) * factor, {x: (-1, 1)}
++        series_approx_50 , series_approx_10 , series_approx_05 , c  = SeriesApprox(bounds=bnds1, reltol=0.5), SeriesApprox(bounds=bnds1, reltol=0.1), SeriesApprox(bounds=bnds1, reltol=0.05), (bnds1[x][1] + bnds1[x][0]) / 2
          f0 = math.exp(c)  # 1.0
  
--        ref_50 , ref_10 , ref_05 , res_50 , res_10 , res_05  = f0 + x + x ** 2 / 2, f0 + x + x ** 2 / 2 + x ** 3 / 6, f0 + x + x ** 2 / 2 + x ** 3 / 6 + x ** 4 / 24, optimize(expr1, [series_approx_50]), optimize(expr1, [series_approx_10]), optimize(expr1, [series_approx_05])
-+        ref_50 = f0 + x + x**2/2
-+        ref_10 = f0 + x + x**2/2 + x**3/6
-+        ref_05 = f0 + x + x**2/2 + x**3/6 + x**4/24
+-        ref_50 = f0 + x + x**2/2
+-        ref_10 = f0 + x + x**2/2 + x**3/6
+-        ref_05 = f0 + x + x**2/2 + x**3/6 + x**4/24
++        ref_50 , ref_10 , ref_05 , res_50 , res_10 , res_05  = f0 + x + x ** 2 / 2, f0 + x + x ** 2 / 2 + x ** 3 / 6, f0 + x + x ** 2 / 2 + x ** 3 / 6 + x ** 4 / 24, optimize(expr1, [series_approx_50]), optimize(expr1, [series_approx_10]), optimize(expr1, [series_approx_05])
  
-+        res_50 = optimize(expr1, [series_approx_50])
-+        res_10 = optimize(expr1, [series_approx_10])
-+        res_05 = optimize(expr1, [series_approx_05])
+-        res_50 = optimize(expr1, [series_approx_50])
+-        res_10 = optimize(expr1, [series_approx_10])
+-        res_05 = optimize(expr1, [series_approx_05])
  
--        assert not (res_50 / factor - ref_50).simplify()
--        assert not (res_10 / factor - ref_10).simplify()
--        assert not (res_05 / factor - ref_05).simplify()
-+        assert (res_50/factor - ref_50).simplify() == 0
-+        assert (res_10/factor - ref_10).simplify() == 0
-+        assert (res_05/factor - ref_05).simplify() == 0
+-        assert (res_50/factor - ref_50).simplify() == 0
+-        assert (res_10/factor - ref_10).simplify() == 0
+-        assert (res_05/factor - ref_05).simplify() == 0
++        assert not (res_50 / factor - ref_50).simplify()
++        assert not (res_10 / factor - ref_10).simplify()
++        assert not (res_05 / factor - ref_05).simplify()
  
          max_ord3 = SeriesApprox(bounds=bnds1, reltol=0.05, max_order=3)
          assert optimize(expr1, [max_ord3]) == expr1
-diff --git a/RefactoringIdiomsOutputdir/tests/test_ast.py b/codegen/tests/test_ast.py
-index 999780e..d8f336d 100644
---- a/RefactoringIdiomsOutputdir/tests/test_ast.py
-+++ b/codegen/tests/test_ast.py
-@@ -79,7 +79,8 @@ def test_AugAssign():
+diff --git a/codegen/tests/test_ast.py b/RefactoringIdiomsOutputdir/tests/test_ast.py
+index d8f336d..999780e 100644
+--- a/codegen/tests/test_ast.py
++++ b/RefactoringIdiomsOutputdir/tests/test_ast.py
+@@ -79,8 +79,7 @@ def test_AugAssign():
              ('/', DivAugmentedAssignment),
              ('%', ModAugmentedAssignment),
          ]:
--        a , b  = aug_assign(x, binop, y), cls(x, y)
-+        a = aug_assign(x, binop, y)
-+        b = cls(x, y)
+-        a = aug_assign(x, binop, y)
+-        b = cls(x, y)
++        a , b  = aug_assign(x, binop, y), cls(x, y)
          assert a.func(*a.args) == a == b
          assert a.binop == binop
          assert a.op == binop + '='
-@@ -103,7 +104,20 @@ def test_AugAssign():
+@@ -104,20 +103,7 @@ def test_AugAssign():
  
  
  def test_Assignment_printing():
--    assignment_classes , pairs  = [Assignment, AddAugmentedAssignment, SubAugmentedAssignment, MulAugmentedAssignment, DivAugmentedAssignment, ModAugmentedAssignment], [(x, 2 * y + 2), (B[i], x), (A22, B22), (A[0, 0], x)]
-+    assignment_classes = [
-+        Assignment,
-+        AddAugmentedAssignment,
-+        SubAugmentedAssignment,
-+        MulAugmentedAssignment,
-+        DivAugmentedAssignment,
-+        ModAugmentedAssignment,
-+    ]
-+    pairs = [
-+        (x, 2 * y + 2),
-+        (B[i], x),
-+        (A22, B22),
-+        (A[0, 0], x),
-+    ]
+-    assignment_classes = [
+-        Assignment,
+-        AddAugmentedAssignment,
+-        SubAugmentedAssignment,
+-        MulAugmentedAssignment,
+-        DivAugmentedAssignment,
+-        ModAugmentedAssignment,
+-    ]
+-    pairs = [
+-        (x, 2 * y + 2),
+-        (B[i], x),
+-        (A22, B22),
+-        (A[0, 0], x),
+-    ]
++    assignment_classes , pairs  = [Assignment, AddAugmentedAssignment, SubAugmentedAssignment, MulAugmentedAssignment, DivAugmentedAssignment, ModAugmentedAssignment], [(x, 2 * y + 2), (B[i], x), (A22, B22), (A[0, 0], x)]
  
      for cls in assignment_classes:
          for lhs, rhs in pairs:
-@@ -126,7 +140,14 @@ def test_CodeBlock_topological_sort():
+@@ -140,14 +126,7 @@ def test_CodeBlock_topological_sort():
          Assignment(y, 2),
          ]
  
--    ordered_assignments , c1  = [Assignment(z, 1), Assignment(y, 2), Assignment(x, y + z), Assignment(t, x)], CodeBlock.topological_sort(assignments)
-+    ordered_assignments = [
-+        # Note that the unrelated z=1 and y=2 are kept in that order
-+        Assignment(z, 1),
-+        Assignment(y, 2),
-+        Assignment(x, y + z),
-+        Assignment(t, x),
-+        ]
-+    c1 = CodeBlock.topological_sort(assignments)
+-    ordered_assignments = [
+-        # Note that the unrelated z=1 and y=2 are kept in that order
+-        Assignment(z, 1),
+-        Assignment(y, 2),
+-        Assignment(x, y + z),
+-        Assignment(t, x),
+-        ]
+-    c1 = CodeBlock.topological_sort(assignments)
++    ordered_assignments , c1  = [Assignment(z, 1), Assignment(y, 2), Assignment(x, y + z), Assignment(t, x)], CodeBlock.topological_sort(assignments)
      assert c1 == CodeBlock(*ordered_assignments)
  
      # Cycle
-@@ -147,8 +168,14 @@ def test_CodeBlock_topological_sort():
+@@ -168,14 +147,8 @@ def test_CodeBlock_topological_sort():
          Assignment(y, b + 3),
          ]
  
--    free_assignments_ordered , c2  = [Assignment(z, a * b), Assignment(y, b + 3), Assignment(x, y + z), Assignment(t, x)], CodeBlock.topological_sort(free_assignments)
-+    free_assignments_ordered = [
-+        Assignment(z, a * b),
-+        Assignment(y, b + 3),
-+        Assignment(x, y + z),
-+        Assignment(t, x),
-+        ]
+-    free_assignments_ordered = [
+-        Assignment(z, a * b),
+-        Assignment(y, b + 3),
+-        Assignment(x, y + z),
+-        Assignment(t, x),
+-        ]
++    free_assignments_ordered , c2  = [Assignment(z, a * b), Assignment(y, b + 3), Assignment(x, y + z), Assignment(t, x)], CodeBlock.topological_sort(free_assignments)
  
-+    c2 = CodeBlock.topological_sort(free_assignments)
+-    c2 = CodeBlock.topological_sort(free_assignments)
      assert c2 == CodeBlock(*free_assignments_ordered)
  
  def test_CodeBlock_free_symbols():
-@@ -158,7 +185,7 @@ def test_CodeBlock_free_symbols():
+@@ -185,7 +158,7 @@ def test_CodeBlock_free_symbols():
          Assignment(t, x),
          Assignment(y, 2),
          )
--    assert not c1.free_symbols
-+    assert c1.free_symbols == set()
+-    assert c1.free_symbols == set()
++    assert not c1.free_symbols
  
      c2 = CodeBlock(
          Assignment(x, y + z),
-@@ -229,7 +256,7 @@ def test_none():
+@@ -256,7 +229,7 @@ def test_none():
          pass
      foo = Foo()
      assert foo != none
--    assert not none
-+    assert none == None
+-    assert none == None
++    assert not none
      assert none == NoneToken()
      assert none.func(*none.args) == none
  
-@@ -272,7 +299,8 @@ def test_Type():
+@@ -299,8 +272,7 @@ def test_Type():
      assert repr(t) == "Type(String('MyType'))"
      assert Type(t) == t
      assert t.func(*t.args) == t
--    t1 , t2  = Type('t1'), Type('t2')
-+    t1 = Type('t1')
-+    t2 = Type('t2')
+-    t1 = Type('t1')
+-    t2 = Type('t2')
++    t1 , t2  = Type('t1'), Type('t2')
      assert t1 != t2
      assert t1 == t1 and t2 == t2
      t1b = Type('t1')
-@@ -304,7 +332,7 @@ def test_Type__cast_check__integers():
+@@ -332,7 +304,7 @@ def test_Type__cast_check__integers():
      assert int8.cast_check(-128) == -128
      raises(ValueError, lambda: int8.cast_check(-129))
  
--    assert not uint8.cast_check(0)
-+    assert uint8.cast_check(0) == 0
+-    assert uint8.cast_check(0) == 0
++    assert not uint8.cast_check(0)
      assert uint8.cast_check(128) == 128
      raises(ValueError, lambda: uint8.cast_check(256.0))
      raises(ValueError, lambda: uint8.cast_check(-1))
-@@ -312,7 +340,8 @@ def test_Type__cast_check__integers():
+@@ -340,8 +312,7 @@ def test_Type__cast_check__integers():
  def test_Attribute():
      noexcept = Attribute('noexcept')
      assert noexcept == Attribute('noexcept')
--    alignas16 , alignas32  = Attribute('alignas', [16]), Attribute('alignas', [32])
-+    alignas16 = Attribute('alignas', [16])
-+    alignas32 = Attribute('alignas', [32])
+-    alignas16 = Attribute('alignas', [16])
+-    alignas32 = Attribute('alignas', [32])
++    alignas16 , alignas32  = Attribute('alignas', [16]), Attribute('alignas', [32])
      assert alignas16 != alignas32
      assert alignas16.func(*alignas16.args) == alignas16
  
-@@ -526,8 +555,10 @@ def test_While():
+@@ -555,10 +526,8 @@ def test_While():
  
  
  def test_Scope():
--    assign , incr  = Assignment(x, y), AddAugmentedAssignment(x, 1)
--    scp , cblk  = Scope([assign, incr]), CodeBlock(assign, incr)
-+    assign = Assignment(x, y)
-+    incr = AddAugmentedAssignment(x, 1)
-+    scp = Scope([assign, incr])
-+    cblk = CodeBlock(assign, incr)
+-    assign = Assignment(x, y)
+-    incr = AddAugmentedAssignment(x, 1)
+-    scp = Scope([assign, incr])
+-    cblk = CodeBlock(assign, incr)
++    assign , incr  = Assignment(x, y), AddAugmentedAssignment(x, 1)
++    scp , cblk  = Scope([assign, incr]), CodeBlock(assign, incr)
      assert scp.body == cblk
      assert scp == Scope(cblk)
      assert scp != Scope([incr, assign])
-@@ -547,11 +578,12 @@ def test_Print():
+@@ -578,12 +547,11 @@ def test_Print():
      ps2 = Print([n, x])
      assert ps2 == Print([n, x])
      assert ps2 != ps
--    assert not ps2.format_string
-+    assert ps2.format_string == None
+-    assert ps2.format_string == None
++    assert not ps2.format_string
  
  
  def test_FunctionPrototype_and_FunctionDefinition():
--    vx , vn  = Variable(x, type=real), Variable(n, type=integer)
-+    vx = Variable(x, type=real)
-+    vn = Variable(n, type=integer)
+-    vx = Variable(x, type=real)
+-    vn = Variable(n, type=integer)
++    vx , vn  = Variable(x, type=real), Variable(n, type=integer)
      fp1 = FunctionPrototype(real, 'power', [vx, vn])
      assert fp1.return_type == real
      assert fp1.name == String('power')
-@@ -608,10 +640,13 @@ def test_FunctionCall():
+@@ -640,13 +608,10 @@ def test_FunctionCall():
      )
  
  def test_ast_replace():
--    x , y , n  = Variable('x', real), Variable('y', real), Variable('n', integer)
-+    x = Variable('x', real)
-+    y = Variable('y', real)
-+    n = Variable('n', integer)
+-    x = Variable('x', real)
+-    y = Variable('y', real)
+-    n = Variable('n', integer)
++    x , y , n  = Variable('x', real), Variable('y', real), Variable('n', integer)
  
      pwer = FunctionDefinition(real, 'pwer', [x, n], [pow(x.symbol, n.symbol)])
--    pname , pcall  = pwer.name, FunctionCall('pwer', [y, 3])
-+    pname = pwer.name
-+    pcall = FunctionCall('pwer', [y, 3])
+-    pname = pwer.name
+-    pcall = FunctionCall('pwer', [y, 3])
++    pname , pcall  = pwer.name, FunctionCall('pwer', [y, 3])
  
      tree1 = CodeBlock(pwer, pcall)
      assert str(tree1.args[0].name) == 'pwer'
-diff --git a/RefactoringIdiomsOutputdir/tests/test_cfunctions.py b/codegen/tests/test_cfunctions.py
-index 76e2947..ca85758 100644
---- a/RefactoringIdiomsOutputdir/tests/test_cfunctions.py
-+++ b/codegen/tests/test_cfunctions.py
+diff --git a/codegen/tests/test_cfunctions.py b/RefactoringIdiomsOutputdir/tests/test_cfunctions.py
+index ca85758..76e2947 100644
+--- a/codegen/tests/test_cfunctions.py
++++ b/RefactoringIdiomsOutputdir/tests/test_cfunctions.py
 @@ -10,7 +10,7 @@ from sympy.core.function import expand_log
  
  def test_expm1():
      # Eval
--    assert not expm1(0)
-+    assert expm1(0) == 0
+-    assert expm1(0) == 0
++    assert not expm1(0)
  
      x = Symbol('x', real=True)
  
@@ -602,29 +616,29 @@ index 76e2947..ca85758 100644
      assert expm1(x).is_finite
  
      # Diff
--    assert not expm1(42 * x).diff(x) - 42 * exp(42 * x)
--    assert not expm1(42 * x).diff(x) - expm1(42 * x).expand(func=True).diff(x)
-+    assert expm1(42*x).diff(x) - 42*exp(42*x) == 0
-+    assert expm1(42*x).diff(x) - expm1(42*x).expand(func=True).diff(x) == 0
+-    assert expm1(42*x).diff(x) - 42*exp(42*x) == 0
+-    assert expm1(42*x).diff(x) - expm1(42*x).expand(func=True).diff(x) == 0
++    assert not expm1(42 * x).diff(x) - 42 * exp(42 * x)
++    assert not expm1(42 * x).diff(x) - expm1(42 * x).expand(func=True).diff(x)
  
  
  def test_log1p():
      # Eval
--    assert not log1p(0)
-+    assert log1p(0) == 0
+-    assert log1p(0) == 0
++    assert not log1p(0)
      d = S(10)
--    assert not expand_log(log1p(d ** (-1000)) - log(d ** 1000 + 1) + log(d ** 1000))
-+    assert expand_log(log1p(d**-1000) - log(d**1000 + 1) + log(d**1000)) == 0
+-    assert expand_log(log1p(d**-1000) - log(d**1000 + 1) + log(d**1000)) == 0
++    assert not expand_log(log1p(d ** (-1000)) - log(d ** 1000 + 1) + log(d ** 1000))
  
      x = Symbol('x', real=True)
  
      # Expand and rewrite
--    assert not log1p(x).expand(func=True) - log(x + 1)
--    assert not log1p(x).rewrite('tractable') - log(x + 1)
--    assert not log1p(x).rewrite('log') - log(x + 1)
-+    assert log1p(x).expand(func=True) - log(x + 1) == 0
-+    assert log1p(x).rewrite('tractable') - log(x + 1) == 0
-+    assert log1p(x).rewrite('log') - log(x + 1) == 0
+-    assert log1p(x).expand(func=True) - log(x + 1) == 0
+-    assert log1p(x).rewrite('tractable') - log(x + 1) == 0
+-    assert log1p(x).rewrite('log') - log(x + 1) == 0
++    assert not log1p(x).expand(func=True) - log(x + 1)
++    assert not log1p(x).rewrite('tractable') - log(x + 1)
++    assert not log1p(x).rewrite('log') - log(x + 1)
  
      # Precision
      assert not abs(log(1e-99 + 1).evalf() - 1e-99) < 1e-100  # for comparison
@@ -632,10 +646,10 @@ index 76e2947..ca85758 100644
      assert log1p(Symbol('o', nonnegative=True)).is_nonnegative
  
      # Diff
--    assert not log1p(42 * x).diff(x) - 42 / (42 * x + 1)
--    assert not log1p(42 * x).diff(x) - log1p(42 * x).expand(func=True).diff(x)
-+    assert log1p(42*x).diff(x) - 42/(42*x + 1) == 0
-+    assert log1p(42*x).diff(x) - log1p(42*x).expand(func=True).diff(x) == 0
+-    assert log1p(42*x).diff(x) - 42/(42*x + 1) == 0
+-    assert log1p(42*x).diff(x) - log1p(42*x).expand(func=True).diff(x) == 0
++    assert not log1p(42 * x).diff(x) - 42 / (42 * x + 1)
++    assert not log1p(42 * x).diff(x) - log1p(42 * x).expand(func=True).diff(x)
  
  
  def test_exp2():
@@ -643,14 +657,14 @@ index 76e2947..ca85758 100644
      x = Symbol('x', real=True)
  
      # Expand
--    assert not exp2(x).expand(func=True) - 2 ** x
-+    assert exp2(x).expand(func=True) - 2**x == 0
+-    assert exp2(x).expand(func=True) - 2**x == 0
++    assert not exp2(x).expand(func=True) - 2 ** x
  
      # Diff
--    assert not exp2(42 * x).diff(x) - 42 * exp2(42 * x) * log(2)
--    assert not exp2(42 * x).diff(x) - exp2(42 * x).diff(x)
-+    assert exp2(42*x).diff(x) - 42*exp2(42*x)*log(2) == 0
-+    assert exp2(42*x).diff(x) - exp2(42*x).diff(x) == 0
+-    assert exp2(42*x).diff(x) - 42*exp2(42*x)*log(2) == 0
+-    assert exp2(42*x).diff(x) - exp2(42*x).diff(x) == 0
++    assert not exp2(42 * x).diff(x) - 42 * exp2(42 * x) * log(2)
++    assert not exp2(42 * x).diff(x) - exp2(42 * x).diff(x)
  
  
  def test_log2():
@@ -658,459 +672,459 @@ index 76e2947..ca85758 100644
      assert log2(2**x) == x
  
      # Expand
--    assert not log2(x).expand(func=True) - log(x) / log(2)
-+    assert log2(x).expand(func=True) - log(x)/log(2) == 0
+-    assert log2(x).expand(func=True) - log(x)/log(2) == 0
++    assert not log2(x).expand(func=True) - log(x) / log(2)
  
      # Diff
--    assert not log2(42 * x).diff() - 1 / (log(2) * x)
--    assert not log2(42 * x).diff() - log2(42 * x).expand(func=True).diff(x)
-+    assert log2(42*x).diff() - 1/(log(2)*x) == 0
-+    assert log2(42*x).diff() - log2(42*x).expand(func=True).diff(x) == 0
+-    assert log2(42*x).diff() - 1/(log(2)*x) == 0
+-    assert log2(42*x).diff() - log2(42*x).expand(func=True).diff(x) == 0
++    assert not log2(42 * x).diff() - 1 / (log(2) * x)
++    assert not log2(42 * x).diff() - log2(42 * x).expand(func=True).diff(x)
  
  
  def test_fma():
      x, y, z = symbols('x y z')
  
      # Expand
--    assert not fma(x, y, z).expand(func=True) - x * y - z
-+    assert fma(x, y, z).expand(func=True) - x*y - z == 0
+-    assert fma(x, y, z).expand(func=True) - x*y - z == 0
++    assert not fma(x, y, z).expand(func=True) - x * y - z
  
      expr = fma(17*x, 42*y, 101*z)
  
      # Diff
--    assert not expr.diff(x) - expr.expand(func=True).diff(x)
--    assert not expr.diff(y) - expr.expand(func=True).diff(y)
--    assert not expr.diff(z) - expr.expand(func=True).diff(z)
-+    assert expr.diff(x) - expr.expand(func=True).diff(x) == 0
-+    assert expr.diff(y) - expr.expand(func=True).diff(y) == 0
-+    assert expr.diff(z) - expr.expand(func=True).diff(z) == 0
+-    assert expr.diff(x) - expr.expand(func=True).diff(x) == 0
+-    assert expr.diff(y) - expr.expand(func=True).diff(y) == 0
+-    assert expr.diff(z) - expr.expand(func=True).diff(z) == 0
++    assert not expr.diff(x) - expr.expand(func=True).diff(x)
++    assert not expr.diff(y) - expr.expand(func=True).diff(y)
++    assert not expr.diff(z) - expr.expand(func=True).diff(z)
  
--    assert not expr.diff(x) - 17 * 42 * y
--    assert not expr.diff(y) - 17 * 42 * x
--    assert not expr.diff(z) - 101
-+    assert expr.diff(x) - 17*42*y == 0
-+    assert expr.diff(y) - 17*42*x == 0
-+    assert expr.diff(z) - 101 == 0
+-    assert expr.diff(x) - 17*42*y == 0
+-    assert expr.diff(y) - 17*42*x == 0
+-    assert expr.diff(z) - 101 == 0
++    assert not expr.diff(x) - 17 * 42 * y
++    assert not expr.diff(y) - 17 * 42 * x
++    assert not expr.diff(z) - 101
  
  
  def test_log10():
      x = Symbol('x')
  
      # Expand
--    assert not log10(x).expand(func=True) - log(x) / log(10)
-+    assert log10(x).expand(func=True) - log(x)/log(10) == 0
+-    assert log10(x).expand(func=True) - log(x)/log(10) == 0
++    assert not log10(x).expand(func=True) - log(x) / log(10)
  
      # Diff
--    assert not log10(42 * x).diff(x) - 1 / (log(10) * x)
--    assert not log10(42 * x).diff(x) - log10(42 * x).expand(func=True).diff(x)
-+    assert log10(42*x).diff(x) - 1/(log(10)*x) == 0
-+    assert log10(42*x).diff(x) - log10(42*x).expand(func=True).diff(x) == 0
+-    assert log10(42*x).diff(x) - 1/(log(10)*x) == 0
+-    assert log10(42*x).diff(x) - log10(42*x).expand(func=True).diff(x) == 0
++    assert not log10(42 * x).diff(x) - 1 / (log(10) * x)
++    assert not log10(42 * x).diff(x) - log10(42 * x).expand(func=True).diff(x)
  
  
  def test_Cbrt():
      x = Symbol('x')
  
      # Expand
--    assert not Cbrt(x).expand(func=True) - x ** Rational(1, 3)
-+    assert Cbrt(x).expand(func=True) - x**Rational(1, 3) == 0
+-    assert Cbrt(x).expand(func=True) - x**Rational(1, 3) == 0
++    assert not Cbrt(x).expand(func=True) - x ** Rational(1, 3)
  
      # Diff
--    assert not Cbrt(42 * x).diff(x) - 42 * (42 * x) ** (Rational(1, 3) - 1) / 3
--    assert not Cbrt(42 * x).diff(x) - Cbrt(42 * x).expand(func=True).diff(x)
-+    assert Cbrt(42*x).diff(x) - 42*(42*x)**(Rational(1, 3) - 1)/3 == 0
-+    assert Cbrt(42*x).diff(x) - Cbrt(42*x).expand(func=True).diff(x) == 0
+-    assert Cbrt(42*x).diff(x) - 42*(42*x)**(Rational(1, 3) - 1)/3 == 0
+-    assert Cbrt(42*x).diff(x) - Cbrt(42*x).expand(func=True).diff(x) == 0
++    assert not Cbrt(42 * x).diff(x) - 42 * (42 * x) ** (Rational(1, 3) - 1) / 3
++    assert not Cbrt(42 * x).diff(x) - Cbrt(42 * x).expand(func=True).diff(x)
  
  
  def test_Sqrt():
      x = Symbol('x')
  
      # Expand
--    assert not Sqrt(x).expand(func=True) - x ** S.Half
-+    assert Sqrt(x).expand(func=True) - x**S.Half == 0
+-    assert Sqrt(x).expand(func=True) - x**S.Half == 0
++    assert not Sqrt(x).expand(func=True) - x ** S.Half
  
      # Diff
--    assert not Sqrt(42 * x).diff(x) - 42 * (42 * x) ** (S.Half - 1) / 2
--    assert not Sqrt(42 * x).diff(x) - Sqrt(42 * x).expand(func=True).diff(x)
-+    assert Sqrt(42*x).diff(x) - 42*(42*x)**(S.Half - 1)/2 == 0
-+    assert Sqrt(42*x).diff(x) - Sqrt(42*x).expand(func=True).diff(x) == 0
+-    assert Sqrt(42*x).diff(x) - 42*(42*x)**(S.Half - 1)/2 == 0
+-    assert Sqrt(42*x).diff(x) - Sqrt(42*x).expand(func=True).diff(x) == 0
++    assert not Sqrt(42 * x).diff(x) - 42 * (42 * x) ** (S.Half - 1) / 2
++    assert not Sqrt(42 * x).diff(x) - Sqrt(42 * x).expand(func=True).diff(x)
  
  
  def test_hypot():
      x, y = symbols('x y')
  
      # Expand
--    assert not hypot(x, y).expand(func=True) - (x ** 2 + y ** 2) ** S.Half
-+    assert hypot(x, y).expand(func=True) - (x**2 + y**2)**S.Half == 0
+-    assert hypot(x, y).expand(func=True) - (x**2 + y**2)**S.Half == 0
++    assert not hypot(x, y).expand(func=True) - (x ** 2 + y ** 2) ** S.Half
  
      # Diff
--    assert not hypot(17 * x, 42 * y).diff(x).expand(func=True) - hypot(17 * x, 42 * y).expand(func=True).diff(x)
--    assert not hypot(17 * x, 42 * y).diff(y).expand(func=True) - hypot(17 * x, 42 * y).expand(func=True).diff(y)
-+    assert hypot(17*x, 42*y).diff(x).expand(func=True) - hypot(17*x, 42*y).expand(func=True).diff(x) == 0
-+    assert hypot(17*x, 42*y).diff(y).expand(func=True) - hypot(17*x, 42*y).expand(func=True).diff(y) == 0
+-    assert hypot(17*x, 42*y).diff(x).expand(func=True) - hypot(17*x, 42*y).expand(func=True).diff(x) == 0
+-    assert hypot(17*x, 42*y).diff(y).expand(func=True) - hypot(17*x, 42*y).expand(func=True).diff(y) == 0
++    assert not hypot(17 * x, 42 * y).diff(x).expand(func=True) - hypot(17 * x, 42 * y).expand(func=True).diff(x)
++    assert not hypot(17 * x, 42 * y).diff(y).expand(func=True) - hypot(17 * x, 42 * y).expand(func=True).diff(y)
  
--    assert not hypot(17 * x, 42 * y).diff(x).expand(func=True) - 2 * 17 * 17 * x * ((17 * x) ** 2 + (42 * y) ** 2) ** Rational(-1, 2) / 2
--    assert not hypot(17 * x, 42 * y).diff(y).expand(func=True) - 2 * 42 * 42 * y * ((17 * x) ** 2 + (42 * y) ** 2) ** Rational(-1, 2) / 2
-+    assert hypot(17*x, 42*y).diff(x).expand(func=True) - 2*17*17*x*((17*x)**2 + (42*y)**2)**Rational(-1, 2)/2 == 0
-+    assert hypot(17*x, 42*y).diff(y).expand(func=True) - 2*42*42*y*((17*x)**2 + (42*y)**2)**Rational(-1, 2)/2 == 0
-diff --git a/RefactoringIdiomsOutputdir/tests/test_fnodes.py b/codegen/tests/test_fnodes.py
-index 6ac8ad7..9520259 100644
---- a/RefactoringIdiomsOutputdir/tests/test_fnodes.py
-+++ b/codegen/tests/test_fnodes.py
-@@ -33,7 +33,8 @@ def test_size_assumed_shape():
+-    assert hypot(17*x, 42*y).diff(x).expand(func=True) - 2*17*17*x*((17*x)**2 + (42*y)**2)**Rational(-1, 2)/2 == 0
+-    assert hypot(17*x, 42*y).diff(y).expand(func=True) - 2*42*42*y*((17*x)**2 + (42*y)**2)**Rational(-1, 2)/2 == 0
++    assert not hypot(17 * x, 42 * y).diff(x).expand(func=True) - 2 * 17 * 17 * x * ((17 * x) ** 2 + (42 * y) ** 2) ** Rational(-1, 2) / 2
++    assert not hypot(17 * x, 42 * y).diff(y).expand(func=True) - 2 * 42 * 42 * y * ((17 * x) ** 2 + (42 * y) ** 2) ** Rational(-1, 2) / 2
+diff --git a/codegen/tests/test_fnodes.py b/RefactoringIdiomsOutputdir/tests/test_fnodes.py
+index 9520259..6ac8ad7 100644
+--- a/codegen/tests/test_fnodes.py
++++ b/RefactoringIdiomsOutputdir/tests/test_fnodes.py
+@@ -33,8 +33,7 @@ def test_size_assumed_shape():
      if not has_fortran():
          skip("No fortran compiler found.")
      a = Symbol('a', real=True)
--    body , arr  = [Return((sum_(a ** 2) / size(a)) ** 0.5)], array(a, dim=[':'], intent='in')
-+    body = [Return((sum_(a**2)/size(a))**.5)]
-+    arr = array(a, dim=[':'], intent='in')
+-    body = [Return((sum_(a**2)/size(a))**.5)]
+-    arr = array(a, dim=[':'], intent='in')
++    body , arr  = [Return((sum_(a ** 2) / size(a)) ** 0.5)], array(a, dim=[':'], intent='in')
      fd = FunctionDefinition(real, 'rms', [arr], body)
      render_as_module([fd], 'mod_rms')
  
-@@ -60,7 +61,8 @@ def test_ImpliedDoLoop():
+@@ -61,8 +60,7 @@ def test_ImpliedDoLoop():
  
      a, i = symbols('a i', integer=True)
      idl = ImpliedDoLoop(i**3, i, -3, 3, 2)
--    ac , a  = ArrayConstructor([-28, idl, 28]), array(a, dim=[':'], attrs=[allocatable])
-+    ac = ArrayConstructor([-28, idl, 28])
-+    a = array(a, dim=[':'], attrs=[allocatable])
+-    ac = ArrayConstructor([-28, idl, 28])
+-    a = array(a, dim=[':'], attrs=[allocatable])
++    ac , a  = ArrayConstructor([-28, idl, 28]), array(a, dim=[':'], attrs=[allocatable])
      prog = Program('idlprog', [
          a.as_Declaration(),
          Assignment(a, ac),
-@@ -78,7 +80,8 @@ def test_ImpliedDoLoop():
+@@ -80,8 +78,7 @@ def test_ImpliedDoLoop():
  def test_Program():
      x = Symbol('x', real=True)
      vx = Variable.deduced(x, 42)
--    decl , prnt  = Declaration(vx), Print([x, x + 1])
-+    decl = Declaration(vx)
-+    prnt = Print([x, x+1])
+-    decl = Declaration(vx)
+-    prnt = Print([x, x+1])
++    decl , prnt  = Declaration(vx), Print([x, x + 1])
      prog = Program('foo', [decl, prnt])
      if not has_fortran():
          skip("No fortran compiler found.")
-@@ -95,7 +98,8 @@ def test_Module():
+@@ -98,8 +95,7 @@ def test_Module():
      x = Symbol('x', real=True)
      v_x = Variable.deduced(x)
      sq = FunctionDefinition(real, 'sqr', [v_x], [Return(x**2)])
--    mod_sq , sq_call  = Module('mod_sq', [], [sq]), FunctionCall('sqr', [42.0])
-+    mod_sq = Module('mod_sq', [], [sq])
-+    sq_call = FunctionCall('sqr', [42.])
+-    mod_sq = Module('mod_sq', [], [sq])
+-    sq_call = FunctionCall('sqr', [42.])
++    mod_sq , sq_call  = Module('mod_sq', [], [sq]), FunctionCall('sqr', [42.0])
      prg_sq = Program('foobar', [
          use('mod_sq', only=['sqr']),
          Print(['"Square of 42 = "', sq_call])
-@@ -118,12 +122,21 @@ def test_Subroutine():
+@@ -122,21 +118,12 @@ def test_Subroutine():
      # http://www.fortran90.org/src/best-practices.html#arrays
      r = Symbol('r', real=True)
      i = Symbol('i', integer=True)
--    v_r , v_i , v_n  = Variable.deduced(r, attrs=(dimension(assumed_extent), intent_out)), Variable.deduced(i), Variable('n', integer)
-+    v_r = Variable.deduced(r, attrs=(dimension(assumed_extent), intent_out))
-+    v_i = Variable.deduced(i)
-+    v_n = Variable('n', integer)
+-    v_r = Variable.deduced(r, attrs=(dimension(assumed_extent), intent_out))
+-    v_i = Variable.deduced(i)
+-    v_n = Variable('n', integer)
++    v_r , v_i , v_n  = Variable.deduced(r, attrs=(dimension(assumed_extent), intent_out)), Variable.deduced(i), Variable('n', integer)
      do_loop = Do([
          Assignment(Element(r, [i]), literal_dp(1)/i**2)
      ], i, 1, v_n)
--    sub , x  = Subroutine('f', [v_r], [Declaration(v_n), Declaration(v_i), Assignment(v_n, size(r)), do_loop]), Symbol('x', real=True)
--    v_x3 , mod  = Variable.deduced(x, attrs=[dimension(3)]), Module('mymod', definitions=[sub])
-+    sub = Subroutine("f", [v_r], [
-+        Declaration(v_n),
-+        Declaration(v_i),
-+        Assignment(v_n, size(r)),
-+        do_loop
-+    ])
-+    x = Symbol('x', real=True)
-+    v_x3 = Variable.deduced(x, attrs=[dimension(3)])
-+    mod = Module('mymod', definitions=[sub])
+-    sub = Subroutine("f", [v_r], [
+-        Declaration(v_n),
+-        Declaration(v_i),
+-        Assignment(v_n, size(r)),
+-        do_loop
+-    ])
+-    x = Symbol('x', real=True)
+-    v_x3 = Variable.deduced(x, attrs=[dimension(3)])
+-    mod = Module('mymod', definitions=[sub])
++    sub , x  = Subroutine('f', [v_r], [Declaration(v_n), Declaration(v_i), Assignment(v_n, size(r)), do_loop]), Symbol('x', real=True)
++    v_x3 , mod  = Variable.deduced(x, attrs=[dimension(3)]), Module('mymod', definitions=[sub])
      prog = Program('foo', [
          use(mod, only=[sub]),
          Declaration(v_x3),
-@@ -180,8 +193,10 @@ def test_bind_C():
+@@ -193,10 +180,8 @@ def test_bind_C():
      if not np:
          skip("NumPy not found.")
  
--    a , s  = Symbol('a', real=True), Symbol('s', integer=True)
--    body , arr  = [Return((sum_(a ** 2) / s) ** 0.5)], array(a, dim=[s], intent='in')
-+    a = Symbol('a', real=True)
-+    s = Symbol('s', integer=True)
-+    body = [Return((sum_(a**2)/s)**.5)]
-+    arr = array(a, dim=[s], intent='in')
+-    a = Symbol('a', real=True)
+-    s = Symbol('s', integer=True)
+-    body = [Return((sum_(a**2)/s)**.5)]
+-    arr = array(a, dim=[s], intent='in')
++    a , s  = Symbol('a', real=True), Symbol('s', integer=True)
++    body , arr  = [Return((sum_(a ** 2) / s) ** 0.5)], array(a, dim=[s], intent='in')
      fd = FunctionDefinition(real, 'rms', [arr, s], body, attrs=[bind_C('rms')])
      f_mod = render_as_module([fd], 'mod_rms')
  
-diff --git a/RefactoringIdiomsOutputdir/tests/test_numpy_nodes.py b/codegen/tests/test_numpy_nodes.py
-index c9c9665..cf80a36 100644
---- a/RefactoringIdiomsOutputdir/tests/test_numpy_nodes.py
-+++ b/codegen/tests/test_numpy_nodes.py
-@@ -8,13 +8,18 @@ from sympy.codegen.numpy_nodes import logaddexp, logaddexp2
+diff --git a/codegen/tests/test_numpy_nodes.py b/RefactoringIdiomsOutputdir/tests/test_numpy_nodes.py
+index cf80a36..c9c9665 100644
+--- a/codegen/tests/test_numpy_nodes.py
++++ b/RefactoringIdiomsOutputdir/tests/test_numpy_nodes.py
+@@ -8,18 +8,13 @@ from sympy.codegen.numpy_nodes import logaddexp, logaddexp2
  x, y, z = symbols('x y z')
  
  def test_logaddexp():
--    lae_xy , ref_xy  = logaddexp(x, y), log(exp(x) + exp(y))
-+    lae_xy = logaddexp(x, y)
-+    ref_xy = log(exp(x) + exp(y))
+-    lae_xy = logaddexp(x, y)
+-    ref_xy = log(exp(x) + exp(y))
++    lae_xy , ref_xy  = logaddexp(x, y), log(exp(x) + exp(y))
      for wrt, deriv_order in product([x, y, z], range(3)):
--        assert not (lae_xy.diff(wrt, deriv_order) - ref_xy.diff(wrt, deriv_order)).rewrite(log).simplify()
-+        assert (
-+            lae_xy.diff(wrt, deriv_order) -
-+            ref_xy.diff(wrt, deriv_order)
-+        ).rewrite(log).simplify() == 0
+-        assert (
+-            lae_xy.diff(wrt, deriv_order) -
+-            ref_xy.diff(wrt, deriv_order)
+-        ).rewrite(log).simplify() == 0
++        assert not (lae_xy.diff(wrt, deriv_order) - ref_xy.diff(wrt, deriv_order)).rewrite(log).simplify()
  
      one_third_e = 1*exp(1)/3
      two_thirds_e = 2*exp(1)/3
--    logThirdE , logTwoThirdsE  = log(one_third_e), log(two_thirds_e)
-+    logThirdE = log(one_third_e)
-+    logTwoThirdsE = log(two_thirds_e)
+-    logThirdE = log(one_third_e)
+-    logTwoThirdsE = log(two_thirds_e)
++    logThirdE , logTwoThirdsE  = log(one_third_e), log(two_thirds_e)
      lae_sum_to_e = logaddexp(logThirdE, logTwoThirdsE)
      assert lae_sum_to_e.rewrite(log) == 1
      assert lae_sum_to_e.simplify() == 1
-@@ -23,16 +28,21 @@ def test_logaddexp():
+@@ -28,21 +23,16 @@ def test_logaddexp():
  
  
  def test_logaddexp2():
--    lae2_xy , ref2_xy  = logaddexp2(x, y), log(2 ** x + 2 ** y) / log(2)
-+    lae2_xy = logaddexp2(x, y)
-+    ref2_xy = log(2**x + 2**y)/log(2)
+-    lae2_xy = logaddexp2(x, y)
+-    ref2_xy = log(2**x + 2**y)/log(2)
++    lae2_xy , ref2_xy  = logaddexp2(x, y), log(2 ** x + 2 ** y) / log(2)
      for wrt, deriv_order in product([x, y, z], range(3)):
--        assert not (lae2_xy.diff(wrt, deriv_order) - ref2_xy.diff(wrt, deriv_order)).rewrite(log).cancel()
-+        assert (
-+            lae2_xy.diff(wrt, deriv_order) -
-+            ref2_xy.diff(wrt, deriv_order)
-+        ).rewrite(log).cancel() == 0
+-        assert (
+-            lae2_xy.diff(wrt, deriv_order) -
+-            ref2_xy.diff(wrt, deriv_order)
+-        ).rewrite(log).cancel() == 0
++        assert not (lae2_xy.diff(wrt, deriv_order) - ref2_xy.diff(wrt, deriv_order)).rewrite(log).cancel()
  
      def lb(x):
          return log(x)/log(2)
  
      two_thirds = S.One*2/3
      four_thirds = 2*two_thirds
--    lbTwoThirds , lbFourThirds  = lb(two_thirds), lb(four_thirds)
-+    lbTwoThirds = lb(two_thirds)
-+    lbFourThirds = lb(four_thirds)
+-    lbTwoThirds = lb(two_thirds)
+-    lbFourThirds = lb(four_thirds)
++    lbTwoThirds , lbFourThirds  = lb(two_thirds), lb(four_thirds)
      lae2_sum_to_2 = logaddexp2(lbTwoThirds, lbFourThirds)
      assert lae2_sum_to_2.rewrite(log) == 1
      assert lae2_sum_to_2.simplify() == 1
-diff --git a/RefactoringIdiomsOutputdir/tests/test_rewriting.py b/codegen/tests/test_rewriting.py
-index f9f03e6..8f184b1 100644
---- a/RefactoringIdiomsOutputdir/tests/test_rewriting.py
-+++ b/codegen/tests/test_rewriting.py
+diff --git a/codegen/tests/test_rewriting.py b/RefactoringIdiomsOutputdir/tests/test_rewriting.py
+index 8f184b1..f9f03e6 100644
+--- a/codegen/tests/test_rewriting.py
++++ b/RefactoringIdiomsOutputdir/tests/test_rewriting.py
 @@ -74,7 +74,7 @@ def test_expm1_opt():
  
      expr1 = exp(x) - 1
      opt1 = optimize(expr1, [expm1_opt])
--    assert not expm1(x) - opt1
-+    assert expm1(x) - opt1 == 0
+-    assert expm1(x) - opt1 == 0
++    assert not expm1(x) - opt1
      assert opt1.rewrite(exp) == expr1
  
      expr2 = 3*exp(x) - 3
-@@ -113,20 +113,24 @@ def test_expm1_opt():
+@@ -113,24 +113,20 @@ def test_expm1_opt():
      expr7 = (2*exp(x) - 1)/(1 - exp(y)) - 1/(1-exp(y))
      opt7 = optimize(expr7, [expm1_opt])
      assert -2*expm1(x)/expm1(y) == opt7
--    assert not (opt7.rewrite(exp) - expr7).factor()
-+    assert (opt7.rewrite(exp) - expr7).factor() == 0
+-    assert (opt7.rewrite(exp) - expr7).factor() == 0
++    assert not (opt7.rewrite(exp) - expr7).factor()
  
      expr8 = (1+exp(x))**2 - 4
--    opt8 , tgt8a , tgt8b  = optimize(expr8, [expm1_opt]), (exp(x) + 3) * expm1(x), 2 * expm1(x) + expm1(2 * x)
-+    opt8 = optimize(expr8, [expm1_opt])
-+    tgt8a = (exp(x) + 3)*expm1(x)
-+    tgt8b = 2*expm1(x) + expm1(2*x)
+-    opt8 = optimize(expr8, [expm1_opt])
+-    tgt8a = (exp(x) + 3)*expm1(x)
+-    tgt8b = 2*expm1(x) + expm1(2*x)
++    opt8 , tgt8a , tgt8b  = optimize(expr8, [expm1_opt]), (exp(x) + 3) * expm1(x), 2 * expm1(x) + expm1(2 * x)
      # Both tgt8a & tgt8b seem to give full precision (~16 digits for double)
      # for x=1e-7 (compare with expr8 which only achieves ~8 significant digits).
      # If we can show that either tgt8a or tgt8b is preferable, we can
      # change this test to ensure the preferable version is returned.
--    assert not (tgt8a - tgt8b).rewrite(exp).factor()
-+    assert (tgt8a - tgt8b).rewrite(exp).factor() == 0
+-    assert (tgt8a - tgt8b).rewrite(exp).factor() == 0
++    assert not (tgt8a - tgt8b).rewrite(exp).factor()
      assert opt8 in (tgt8a, tgt8b)
--    assert not (opt8.rewrite(exp) - expr8).factor()
-+    assert (opt8.rewrite(exp) - expr8).factor() == 0
+-    assert (opt8.rewrite(exp) - expr8).factor() == 0
++    assert not (opt8.rewrite(exp) - expr8).factor()
  
      expr9 = sin(expr8)
--    opt9 , tgt9a , tgt9b  = optimize(expr9, [expm1_opt]), sin(tgt8a), sin(tgt8b)
-+    opt9 = optimize(expr9, [expm1_opt])
-+    tgt9a = sin(tgt8a)
-+    tgt9b = sin(tgt8b)
+-    opt9 = optimize(expr9, [expm1_opt])
+-    tgt9a = sin(tgt8a)
+-    tgt9b = sin(tgt8b)
++    opt9 , tgt9a , tgt9b  = optimize(expr9, [expm1_opt]), sin(tgt8a), sin(tgt8b)
      assert opt9 in (tgt9a, tgt9b)
      assert (opt9.rewrite(exp) - expr9.rewrite(exp)).factor().is_zero
  
-@@ -143,7 +147,7 @@ def test_cosm1_opt():
+@@ -147,7 +143,7 @@ def test_cosm1_opt():
  
      expr1 = cos(x) - 1
      opt1 = optimize(expr1, [cosm1_opt])
--    assert not cosm1(x) - opt1
-+    assert cosm1(x) - opt1 == 0
+-    assert cosm1(x) - opt1 == 0
++    assert not cosm1(x) - opt1
      assert opt1.rewrite(cos) == expr1
  
      expr2 = 3*cos(x) - 3
-@@ -194,17 +198,17 @@ def test_log1p_opt():
+@@ -198,17 +194,17 @@ def test_log1p_opt():
      x = Symbol('x')
      expr1 = log(x + 1)
      opt1 = optimize(expr1, [log1p_opt])
--    assert not log1p(x) - opt1
-+    assert log1p(x) - opt1 == 0
+-    assert log1p(x) - opt1 == 0
++    assert not log1p(x) - opt1
      assert opt1.rewrite(log) == expr1
  
      expr2 = log(3*x + 3)
      opt2 = optimize(expr2, [log1p_opt])
      assert log1p(x) + log(3) == opt2
--    assert not (opt2.rewrite(log) - expr2).simplify()
-+    assert (opt2.rewrite(log) - expr2).simplify() == 0
+-    assert (opt2.rewrite(log) - expr2).simplify() == 0
++    assert not (opt2.rewrite(log) - expr2).simplify()
  
      expr3 = log(2*x + 1)
      opt3 = optimize(expr3, [log1p_opt])
--    assert not log1p(2 * x) - opt3
-+    assert log1p(2*x) - opt3 == 0
+-    assert log1p(2*x) - opt3 == 0
++    assert not log1p(2 * x) - opt3
      assert opt3.rewrite(log) == expr3
  
      expr4 = log(x+3)
-@@ -228,19 +232,19 @@ def test_optims_c99():
+@@ -232,19 +228,19 @@ def test_optims_c99():
      expr3 = log(x)/log(2) + log(17*x + 17)
      opt3 = optimize(expr3, optims_c99)
      delta3 = opt3 - (log2(x) + log(17) + log1p(x))
--    assert not delta3
--    assert not (opt3.rewrite(log) - expr3).simplify()
-+    assert delta3 == 0
-+    assert (opt3.rewrite(log) - expr3).simplify() == 0
+-    assert delta3 == 0
+-    assert (opt3.rewrite(log) - expr3).simplify() == 0
++    assert not delta3
++    assert not (opt3.rewrite(log) - expr3).simplify()
  
      expr4 = 2**x + 3*log(5*x + 7)/(13*log(2)) + 11*exp(x) - 11 + log(17*x + 17)
      opt4 = optimize(expr4, optims_c99).simplify()
      delta4 = opt4 - (exp2(x) + 3*log2(5*x + 7)/13 + 11*expm1(x) + log(17) + log1p(x))
--    assert not delta4
--    assert not (opt4.rewrite(exp).rewrite(log).rewrite(Pow) - expr4).simplify()
-+    assert delta4 == 0
-+    assert (opt4.rewrite(exp).rewrite(log).rewrite(Pow) - expr4).simplify() == 0
+-    assert delta4 == 0
+-    assert (opt4.rewrite(exp).rewrite(log).rewrite(Pow) - expr4).simplify() == 0
++    assert not delta4
++    assert not (opt4.rewrite(exp).rewrite(log).rewrite(Pow) - expr4).simplify()
  
      expr5 = 3*exp(2*x) - 3
      opt5 = optimize(expr5, optims_c99)
      delta5 = opt5 - 3*expm1(2*x)
--    assert not delta5
-+    assert delta5 == 0
+-    assert delta5 == 0
++    assert not delta5
      assert opt5.rewrite(exp) == expr5
  
      expr6 = exp(2*x) - 3
-@@ -250,8 +254,8 @@ def test_optims_c99():
+@@ -254,8 +250,8 @@ def test_optims_c99():
      expr7 = log(3*x + 3)
      opt7 = optimize(expr7, optims_c99)
      delta7 = opt7 - (log(3) + log1p(x))
--    assert not delta7
--    assert not (opt7.rewrite(log) - expr7).simplify()
-+    assert delta7 == 0
-+    assert (opt7.rewrite(log) - expr7).simplify() == 0
+-    assert delta7 == 0
+-    assert (opt7.rewrite(log) - expr7).simplify() == 0
++    assert not delta7
++    assert not (opt7.rewrite(log) - expr7).simplify()
  
      expr8 = log(2*x + 3)
      opt8 = optimize(expr8, optims_c99)
-@@ -259,7 +263,9 @@ def test_optims_c99():
+@@ -263,9 +259,7 @@ def test_optims_c99():
  
  
  def test_create_expand_pow_optimization():
--    cc , x  = lambda x: ccode(optimize(x, [create_expand_pow_optimization(4)])), Symbol('x')
-+    cc = lambda x: ccode(
-+        optimize(x, [create_expand_pow_optimization(4)]))
-+    x = Symbol('x')
+-    cc = lambda x: ccode(
+-        optimize(x, [create_expand_pow_optimization(4)]))
+-    x = Symbol('x')
++    cc , x  = lambda x: ccode(optimize(x, [create_expand_pow_optimization(4)])), Symbol('x')
      assert cc(x**4) == 'x*x*x*x'
      assert cc(x**4 + x**2) == 'x*x + x*x*x*x'
      assert cc(x**5 + x**4) == 'pow(x, 5) + x*x*x*x'
-@@ -282,7 +288,8 @@ def test_create_expand_pow_optimization():
+@@ -288,8 +282,7 @@ def test_create_expand_pow_optimization():
  
  def test_matsolve():
      n = Symbol('n', integer=True)
--    A , x  = MatrixSymbol('A', n, n), MatrixSymbol('x', n, 1)
-+    A = MatrixSymbol('A', n, n)
-+    x = MatrixSymbol('x', n, 1)
+-    A = MatrixSymbol('A', n, n)
+-    x = MatrixSymbol('x', n, 1)
++    A , x  = MatrixSymbol('A', n, n), MatrixSymbol('x', n, 1)
  
      with assuming(Q.fullrank(A)):
          assert optimize(A**(-1) * x, [matinv_opt]) == MatrixSolve(A, x)
-@@ -293,8 +300,8 @@ def test_logaddexp_opt():
+@@ -300,8 +293,8 @@ def test_logaddexp_opt():
      x, y = map(Symbol, 'x y'.split())
      expr1 = log(exp(x) + exp(y))
      opt1 = optimize(expr1, [logaddexp_opt])
--    assert not logaddexp(x, y) - opt1
--    assert not logaddexp(y, x) - opt1
-+    assert logaddexp(x, y) - opt1 == 0
-+    assert logaddexp(y, x) - opt1 == 0
+-    assert logaddexp(x, y) - opt1 == 0
+-    assert logaddexp(y, x) - opt1 == 0
++    assert not logaddexp(x, y) - opt1
++    assert not logaddexp(y, x) - opt1
      assert opt1.rewrite(log) == expr1
  
  
-@@ -302,8 +309,8 @@ def test_logaddexp2_opt():
+@@ -309,8 +302,8 @@ def test_logaddexp2_opt():
      x, y = map(Symbol, 'x y'.split())
      expr1 = log(2**x + 2**y)/log(2)
      opt1 = optimize(expr1, [logaddexp2_opt])
--    assert not logaddexp2(x, y) - opt1
--    assert not logaddexp2(y, x) - opt1
-+    assert logaddexp2(x, y) - opt1 == 0
-+    assert logaddexp2(y, x) - opt1 == 0
+-    assert logaddexp2(x, y) - opt1 == 0
+-    assert logaddexp2(y, x) - opt1 == 0
++    assert not logaddexp2(x, y) - opt1
++    assert not logaddexp2(y, x) - opt1
      assert opt1.rewrite(log) == expr1
  
  
-@@ -362,25 +369,49 @@ def test_compiled_ccode_with_rewriting():
+@@ -369,49 +362,25 @@ def test_compiled_ccode_with_rewriting():
      if not has_c():
          skip("No C compiler found.")
  
--    x , about_two  = Symbol('x'), 2 ** (58 / S(117)) * 3 ** (97 / S(117)) * 5 ** (4 / S(39)) * 7 ** (92 / S(117)) / S(30) * pi
-+    x = Symbol('x')
-+    about_two = 2**(58/S(117))*3**(97/S(117))*5**(4/S(39))*7**(92/S(117))/S(30)*pi
+-    x = Symbol('x')
+-    about_two = 2**(58/S(117))*3**(97/S(117))*5**(4/S(39))*7**(92/S(117))/S(30)*pi
++    x , about_two  = Symbol('x'), 2 ** (58 / S(117)) * 3 ** (97 / S(117)) * 5 ** (4 / S(39)) * 7 ** (92 / S(117)) / S(30) * pi
      # about_two: 1.999999999999581826
--    unchanged , xval  = 2 * exp(x) - about_two, S(10) ** (-11)
--    ref , rewritten , NUMBER_OF_DIGITS  = unchanged.subs(x, xval).n(19), optimize(2 * exp(x) - about_two, [expm1_opt]), 25 # 2.0418173913673213e-11
-+    unchanged = 2*exp(x) - about_two
-+    xval = S(10)**-11
-+    ref = unchanged.subs(x, xval).n(19) # 2.0418173913673213e-11
+-    unchanged = 2*exp(x) - about_two
+-    xval = S(10)**-11
+-    ref = unchanged.subs(x, xval).n(19) # 2.0418173913673213e-11
++    unchanged , xval  = 2 * exp(x) - about_two, S(10) ** (-11)
++    ref , rewritten , NUMBER_OF_DIGITS  = unchanged.subs(x, xval).n(19), optimize(2 * exp(x) - about_two, [expm1_opt]), 25 # 2.0418173913673213e-11
  
-+    rewritten = optimize(2*exp(x) - about_two, [expm1_opt])
+-    rewritten = optimize(2*exp(x) - about_two, [expm1_opt])
  
      # Unfortunately, we need to call ``.n()`` on our expressions before we hand them
      # to ``ccode``, and we need to request a large number of significant digits.
      # In this test, results converged for double precision when the following number
      # of significant digits were chosen:
+-    NUMBER_OF_DIGITS = 25   # TODO: this should ideally be automatically handled.
 -
--    func_c , func_pyx  = '\n#include <math.h>\n\ndouble func_unchanged(double x) {\n    return %(unchanged)s;\n}\ndouble func_rewritten(double x) {\n    return %(rewritten)s;\n}\n' % dict(unchanged=ccode(unchanged.n(NUMBER_OF_DIGITS)), rewritten=ccode(rewritten.n(NUMBER_OF_DIGITS))), '\n#cython: language_level=3\ncdef extern double func_unchanged(double)\ncdef extern double func_rewritten(double)\ndef py_unchanged(x):\n    return func_unchanged(x)\ndef py_rewritten(x):\n    return func_rewritten(x)\n'
+-    func_c = '''
+-#include <math.h>
 -
-+    NUMBER_OF_DIGITS = 25   # TODO: this should ideally be automatically handled.
+-double func_unchanged(double x) {
+-    return %(unchanged)s;
+-}
+-double func_rewritten(double x) {
+-    return %(rewritten)s;
+-}
+-''' % dict(unchanged=ccode(unchanged.n(NUMBER_OF_DIGITS)),
+-           rewritten=ccode(rewritten.n(NUMBER_OF_DIGITS)))
+-
+-    func_pyx = '''
+-#cython: language_level=3
+-cdef extern double func_unchanged(double)
+-cdef extern double func_rewritten(double)
+-def py_unchanged(x):
+-    return func_unchanged(x)
+-def py_rewritten(x):
+-    return func_rewritten(x)
+-'''
 +
-+    func_c = '''
-+#include <math.h>
++    func_c , func_pyx  = '\n#include <math.h>\n\ndouble func_unchanged(double x) {\n    return %(unchanged)s;\n}\ndouble func_rewritten(double x) {\n    return %(rewritten)s;\n}\n' % dict(unchanged=ccode(unchanged.n(NUMBER_OF_DIGITS)), rewritten=ccode(rewritten.n(NUMBER_OF_DIGITS))), '\n#cython: language_level=3\ncdef extern double func_unchanged(double)\ncdef extern double func_rewritten(double)\ndef py_unchanged(x):\n    return func_unchanged(x)\ndef py_rewritten(x):\n    return func_rewritten(x)\n'
 +
-+double func_unchanged(double x) {
-+    return %(unchanged)s;
-+}
-+double func_rewritten(double x) {
-+    return %(rewritten)s;
-+}
-+''' % dict(unchanged=ccode(unchanged.n(NUMBER_OF_DIGITS)),
-+           rewritten=ccode(rewritten.n(NUMBER_OF_DIGITS)))
-+
-+    func_pyx = '''
-+#cython: language_level=3
-+cdef extern double func_unchanged(double)
-+cdef extern double func_rewritten(double)
-+def py_unchanged(x):
-+    return func_unchanged(x)
-+def py_rewritten(x):
-+    return func_rewritten(x)
-+'''
      with tempfile.TemporaryDirectory() as folder:
          mod, info = compile_link_import_strings(
              [('func.c', func_c), ('_func.pyx', func_pyx)],
              build_dir=folder, compile_kwargs=dict(std='c99')
          )
--        err_rewritten , err_unchanged  = abs(mod.py_rewritten(1e-11) - ref), abs(mod.py_unchanged(1e-11) - ref)
-+        err_rewritten = abs(mod.py_rewritten(1e-11) - ref)
-+        err_unchanged = abs(mod.py_unchanged(1e-11) - ref)
+-        err_rewritten = abs(mod.py_rewritten(1e-11) - ref)
+-        err_unchanged = abs(mod.py_unchanged(1e-11) - ref)
++        err_rewritten , err_unchanged  = abs(mod.py_rewritten(1e-11) - ref), abs(mod.py_unchanged(1e-11) - ref)
          assert 1e-27 < err_rewritten < 1e-25  # highly accurate.
          assert 1e-19 < err_unchanged < 1e-16  # quite poor.
  
-diff --git a/RefactoringIdiomsOutputdir/tests/test_scipy_nodes.py b/codegen/tests/test_scipy_nodes.py
-index 2f167ac..2a38b77 100644
---- a/RefactoringIdiomsOutputdir/tests/test_scipy_nodes.py
-+++ b/codegen/tests/test_scipy_nodes.py
-@@ -8,9 +8,13 @@ x, y, z = symbols('x y z')
+diff --git a/codegen/tests/test_scipy_nodes.py b/RefactoringIdiomsOutputdir/tests/test_scipy_nodes.py
+index 2a38b77..2f167ac 100644
+--- a/codegen/tests/test_scipy_nodes.py
++++ b/RefactoringIdiomsOutputdir/tests/test_scipy_nodes.py
+@@ -8,13 +8,9 @@ x, y, z = symbols('x y z')
  
  
  def test_cosm1():
--    cm1_xy , ref_xy  = cosm1(x * y), cos(x * y) - 1
-+    cm1_xy = cosm1(x*y)
-+    ref_xy = cos(x*y) - 1
+-    cm1_xy = cosm1(x*y)
+-    ref_xy = cos(x*y) - 1
++    cm1_xy , ref_xy  = cosm1(x * y), cos(x * y) - 1
      for wrt, deriv_order in product([x, y, z], range(3)):
--        assert not (cm1_xy.diff(wrt, deriv_order) - ref_xy.diff(wrt, deriv_order)).rewrite(cos).simplify()
-+        assert (
-+            cm1_xy.diff(wrt, deriv_order) -
-+            ref_xy.diff(wrt, deriv_order)
-+        ).rewrite(cos).simplify() == 0
+-        assert (
+-            cm1_xy.diff(wrt, deriv_order) -
+-            ref_xy.diff(wrt, deriv_order)
+-        ).rewrite(cos).simplify() == 0
++        assert not (cm1_xy.diff(wrt, deriv_order) - ref_xy.diff(wrt, deriv_order)).rewrite(cos).simplify()
  
      expr_minus2 = cosm1(pi)
      assert expr_minus2.rewrite(cos) == -2
