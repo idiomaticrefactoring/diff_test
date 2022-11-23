@@ -1,17 +1,3 @@
-diff --git a/codegen/.DS_Store b/codegen/.DS_Store
-deleted file mode 100644
-index 5008ddfcf53c02e82d7eee2e57c38e5672ef89f6..0000000000000000000000000000000000000000
-GIT binary patch
-literal 0
-HcmV?d00001
-
-literal 6148
-zcmeH~Jr2S!425mzP>H1@V-^m;4Wg<&0T*E43hX&L&p$$qDprKhvt+--jT7}7np#A3
-zem<@ulZcFPQ@L2!n>{z**<q8>++&mCkOWA81W14cNZ<zv;LbK1Poaz?KmsK2CSc!(
-z0ynLxE!0092;Krf2c+FF_Fe*7ECH>lEfg7;MkzE(HCqgga^y>{tEnwC%0;vJ&^%eQ
-zLs35+`xjp>T0<F0fCPF1$Cyrb|F7^5{eNG?83~ZUUlGt@xh*qZDeu<Z%US-OSsOPv
-j)R!Z4KLME7ReXlK;d!wEw5GODWMKRea10D2@KpjYNUI8I
-
 diff --git a/codegen/algorithms.py b/RefactoringIdiomsOutputdir/algorithms.py
 index 5a0fa75..6bd5734 100644
 --- a/codegen/algorithms.py
