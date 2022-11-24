@@ -62,7 +62,8 @@ class Optimization:
 
     """
     def __init__(self, cost_function=None, priority=1):
-        self.cost_function , self.priority  = cost_function, priority
+        self.cost_function = cost_function
+        self.priority=priority
 
     def cheapest(self, *args):
         return sorted(args, key=self.cost_function)[0]
@@ -102,7 +103,8 @@ class ReplaceOptim(Optimization):
 
     def __init__(self, query, value, **kwargs):
         super().__init__(**kwargs)
-        self.query , self.value  = query, value
+        self.query = query
+        self.value = value
 
     def __call__(self, expr):
         return expr.replace(self.query, self.value)
@@ -222,7 +224,9 @@ class FuncMinusOneOptim(ReplaceOptim):
         weight = 10  # <-- this is an arbitrary number (heuristic)
         super().__init__(lambda e: e.is_Add, self.replace_in_Add,
                          cost_function=lambda expr: expr.count_ops() - weight*expr.count(func_m_1))
-        self.func , self.func_m_1 , self.opportunistic  = func, func_m_1, opportunistic
+        self.func = func
+        self.func_m_1 = func_m_1
+        self.opportunistic = opportunistic
 
     def _group_Add_terms(self, add):
         numbers, non_num = sift(add.args, lambda arg: arg.is_number, binary=True)
@@ -233,13 +237,13 @@ class FuncMinusOneOptim(ReplaceOptim):
     def replace_in_Add(self, e):
         """ passed as second argument to Basic.replace(...) """
         numsum, terms_with_func, other_non_num_terms = self._group_Add_terms(e)
-        if not numsum:
+        if numsum == 0:
             return e
         substituted, untouched = [], []
         for with_func in terms_with_func:
             if with_func.is_Mul:
                 func, coeff = sift(with_func.args, lambda arg: arg.func == self.func, binary=True)
-                if len(func) == 1 == len(coeff):
+                if len(func) == 1 and len(coeff) == 1:
                     func, coeff = func[0], coeff[0]
                 else:
                     coeff = None
@@ -263,7 +267,8 @@ class FuncMinusOneOptim(ReplaceOptim):
         return e.func(numsum, *substituted, *untouched, *other_non_num_terms)
 
     def __call__(self, expr):
-        alt1 , alt2  = super().__call__(expr), super().__call__(expr.factor())
+        alt1 = super().__call__(expr)
+        alt2 = super().__call__(expr.factor())
         return self.cheapest(alt1, alt2)
 
 
