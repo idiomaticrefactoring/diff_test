@@ -12,7 +12,8 @@ def test_logaddexp():
     for wrt, deriv_order in product([x, y, z], range(3)):
         assert not (lae_xy.diff(wrt, deriv_order) - ref_xy.diff(wrt, deriv_order)).rewrite(log).simplify()
 
-    one_third_e , two_thirds_e  = 1 * exp(1) / 3, 2 * exp(1) / 3
+    one_third_e = 1*exp(1)/3
+    two_thirds_e = 2*exp(1)/3
     logThirdE , logTwoThirdsE  = log(one_third_e), log(two_thirds_e)
     lae_sum_to_e = logaddexp(logThirdE, logTwoThirdsE)
     assert lae_sum_to_e.rewrite(log) == 1
