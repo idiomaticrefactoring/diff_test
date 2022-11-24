@@ -116,8 +116,7 @@ def test_Module():
 def test_Subroutine():
     # Code to generate the subroutine in the example from
     # http://www.fortran90.org/src/best-practices.html#arrays
-    r = Symbol('r', real=True)
-    i = Symbol('i', integer=True)
+    r , i  = Symbol('r', real=True), Symbol('i', integer=True)
     v_r , v_i , v_n  = Variable.deduced(r, attrs=(dimension(assumed_extent), intent_out)), Variable.deduced(i), Variable('n', integer)
     do_loop = Do([
         Assignment(Element(r, [i]), literal_dp(1)/i**2)

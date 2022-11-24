@@ -1,6 +1,6 @@
 diff -uarN codegen/algorithms.py RefactoringIdiomsOutputdir/algorithms.py
 --- codegen/algorithms.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/algorithms.py	2022-11-24 08:58:21.000000000 +0800
++++ RefactoringIdiomsOutputdir/algorithms.py	2022-11-24 09:06:05.000000000 +0800
 @@ -58,20 +58,16 @@
      """
  
@@ -35,7 +35,7 @@ diff -uarN codegen/algorithms.py RefactoringIdiomsOutputdir/algorithms.py
      return FunctionDefinition(real, func_name, declars, body, attrs=attrs)
 diff -uarN codegen/approximations.py RefactoringIdiomsOutputdir/approximations.py
 --- codegen/approximations.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/approximations.py	2022-11-24 08:58:22.000000000 +0800
++++ RefactoringIdiomsOutputdir/approximations.py	2022-11-24 09:06:05.000000000 +0800
 @@ -53,8 +53,7 @@
  
      def __init__(self, bounds, reltol, **kwargs):
@@ -98,7 +98,7 @@ diff -uarN codegen/approximations.py RefactoringIdiomsOutputdir/approximations.p
                      break
 diff -uarN codegen/ast.py RefactoringIdiomsOutputdir/ast.py
 --- codegen/ast.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/ast.py	2022-11-24 08:58:21.000000000 +0800
++++ RefactoringIdiomsOutputdir/ast.py	2022-11-24 09:06:05.000000000 +0800
 @@ -200,7 +200,7 @@
      def _construct(cls, attr, arg):
          """ Construct an attribute value from argument passed to ``__new__()``. """
@@ -209,7 +209,7 @@ diff -uarN codegen/ast.py RefactoringIdiomsOutputdir/ast.py
  
 diff -uarN codegen/cutils.py RefactoringIdiomsOutputdir/cutils.py
 --- codegen/cutils.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/cutils.py	2022-11-24 08:58:21.000000000 +0800
++++ RefactoringIdiomsOutputdir/cutils.py	2022-11-24 09:06:05.000000000 +0800
 @@ -3,6 +3,5 @@
  def render_as_source_file(content, Printer=C99CodePrinter, settings=None):
      """ Renders a C source file (with required #include statements) """
@@ -220,7 +220,7 @@ diff -uarN codegen/cutils.py RefactoringIdiomsOutputdir/cutils.py
      return includes + '\n\n' + code_str
 diff -uarN codegen/fnodes.py RefactoringIdiomsOutputdir/fnodes.py
 --- codegen/fnodes.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/fnodes.py	2022-11-24 08:58:21.000000000 +0800
++++ RefactoringIdiomsOutputdir/fnodes.py	2022-11-24 09:06:05.000000000 +0800
 @@ -281,13 +281,13 @@
          if len(args) == 2:
              low, high = args
@@ -248,7 +248,7 @@ diff -uarN codegen/fnodes.py RefactoringIdiomsOutputdir/fnodes.py
  
 diff -uarN codegen/futils.py RefactoringIdiomsOutputdir/futils.py
 --- codegen/futils.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/futils.py	2022-11-24 08:58:21.000000000 +0800
++++ RefactoringIdiomsOutputdir/futils.py	2022-11-24 09:06:05.000000000 +0800
 @@ -26,14 +26,11 @@
  
      """
@@ -268,7 +268,7 @@ diff -uarN codegen/futils.py RefactoringIdiomsOutputdir/futils.py
      module_use_str += '   public %s\n' % ', '.join([str(node.name) for node in definitions if getattr(node, 'name', None)])
 diff -uarN codegen/rewriting.py RefactoringIdiomsOutputdir/rewriting.py
 --- codegen/rewriting.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/rewriting.py	2022-11-24 08:58:21.000000000 +0800
++++ RefactoringIdiomsOutputdir/rewriting.py	2022-11-24 09:06:05.000000000 +0800
 @@ -62,8 +62,7 @@
  
      """
@@ -328,7 +328,7 @@ diff -uarN codegen/rewriting.py RefactoringIdiomsOutputdir/rewriting.py
  
 diff -uarN codegen/tests/test_algorithms.py RefactoringIdiomsOutputdir/tests/test_algorithms.py
 --- codegen/tests/test_algorithms.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_algorithms.py	2022-11-24 08:58:23.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_algorithms.py	2022-11-24 09:06:07.000000000 +0800
 @@ -72,8 +72,7 @@
      x = sp.Symbol('x', real=True)
      expr = sp.cos(x) - x**3
@@ -341,7 +341,7 @@ diff -uarN codegen/tests/test_algorithms.py RefactoringIdiomsOutputdir/tests/tes
      assert abs(res - 0.865474033102) < 1e-12
 diff -uarN codegen/tests/test_applications.py RefactoringIdiomsOutputdir/tests/test_applications.py
 --- codegen/tests/test_applications.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_applications.py	2022-11-24 08:58:22.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_applications.py	2022-11-24 09:06:05.000000000 +0800
 @@ -26,8 +26,7 @@
  
  
@@ -354,7 +354,7 @@ diff -uarN codegen/tests/test_applications.py RefactoringIdiomsOutputdir/tests/t
          ('_our_test_func.pyx', ("#cython: language_level={}\n".format("3") +
 diff -uarN codegen/tests/test_approximations.py RefactoringIdiomsOutputdir/tests/test_approximations.py
 --- codegen/tests/test_approximations.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_approximations.py	2022-11-24 08:58:22.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_approximations.py	2022-11-24 09:06:05.000000000 +0800
 @@ -7,47 +7,34 @@
  
  def test_SumApprox_trivial():
@@ -420,7 +420,7 @@ diff -uarN codegen/tests/test_approximations.py RefactoringIdiomsOutputdir/tests
          assert optimize(expr1, [max_ord3]) == expr1
 diff -uarN codegen/tests/test_ast.py RefactoringIdiomsOutputdir/tests/test_ast.py
 --- codegen/tests/test_ast.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_ast.py	2022-11-24 08:58:23.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_ast.py	2022-11-24 09:06:07.000000000 +0800
 @@ -79,8 +79,7 @@
              ('/', DivAugmentedAssignment),
              ('%', ModAugmentedAssignment),
@@ -578,7 +578,7 @@ diff -uarN codegen/tests/test_ast.py RefactoringIdiomsOutputdir/tests/test_ast.p
      assert str(tree1.args[0].name) == 'pwer'
 diff -uarN codegen/tests/test_cfunctions.py RefactoringIdiomsOutputdir/tests/test_cfunctions.py
 --- codegen/tests/test_cfunctions.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_cfunctions.py	2022-11-24 08:58:22.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_cfunctions.py	2022-11-24 09:06:05.000000000 +0800
 @@ -10,7 +10,7 @@
  
  def test_expm1():
@@ -745,7 +745,7 @@ diff -uarN codegen/tests/test_cfunctions.py RefactoringIdiomsOutputdir/tests/tes
 +    assert not hypot(17 * x, 42 * y).diff(y).expand(func=True) - 2 * 42 * 42 * y * ((17 * x) ** 2 + (42 * y) ** 2) ** Rational(-1, 2) / 2
 diff -uarN codegen/tests/test_fnodes.py RefactoringIdiomsOutputdir/tests/test_fnodes.py
 --- codegen/tests/test_fnodes.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_fnodes.py	2022-11-24 08:58:22.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_fnodes.py	2022-11-24 09:06:05.000000000 +0800
 @@ -33,8 +33,7 @@
      if not has_fortran():
          skip("No fortran compiler found.")
@@ -826,7 +826,7 @@ diff -uarN codegen/tests/test_fnodes.py RefactoringIdiomsOutputdir/tests/test_fn
  
 diff -uarN codegen/tests/test_numpy_nodes.py RefactoringIdiomsOutputdir/tests/test_numpy_nodes.py
 --- codegen/tests/test_numpy_nodes.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_numpy_nodes.py	2022-11-24 08:58:22.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_numpy_nodes.py	2022-11-24 09:06:05.000000000 +0800
 @@ -8,18 +8,13 @@
  x, y, z = symbols('x y z')
  
@@ -876,7 +876,7 @@ diff -uarN codegen/tests/test_numpy_nodes.py RefactoringIdiomsOutputdir/tests/te
      assert lae2_sum_to_2.simplify() == 1
 diff -uarN codegen/tests/test_rewriting.py RefactoringIdiomsOutputdir/tests/test_rewriting.py
 --- codegen/tests/test_rewriting.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_rewriting.py	2022-11-24 08:58:22.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_rewriting.py	2022-11-24 09:06:06.000000000 +0800
 @@ -74,7 +74,7 @@
  
      expr1 = exp(x) - 1
@@ -1082,7 +1082,7 @@ diff -uarN codegen/tests/test_rewriting.py RefactoringIdiomsOutputdir/tests/test
  
 diff -uarN codegen/tests/test_scipy_nodes.py RefactoringIdiomsOutputdir/tests/test_scipy_nodes.py
 --- codegen/tests/test_scipy_nodes.py	2022-10-17 16:26:03.000000000 +0800
-+++ RefactoringIdiomsOutputdir/tests/test_scipy_nodes.py	2022-11-24 08:58:22.000000000 +0800
++++ RefactoringIdiomsOutputdir/tests/test_scipy_nodes.py	2022-11-24 09:06:05.000000000 +0800
 @@ -8,13 +8,9 @@
  
  

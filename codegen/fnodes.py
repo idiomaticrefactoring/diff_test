@@ -281,13 +281,13 @@ class Extent(Basic):
         if len(args) == 2:
             low, high = args
             return Basic.__new__(cls, sympify(low), sympify(high))
-        elif len(args) == 0 or (len(args) == 1 and args[0] in (':', None)):
+        elif not len(args) or (len(args) == 1 and args[0] in (':', None)):
             return Basic.__new__(cls)  # assumed shape
         else:
             raise ValueError("Expected 0 or 2 args (or one argument == None or ':')")
 
     def _sympystr(self, printer):
-        if len(self.args) == 0:
+        if not len(self.args):
             return ':'
         return ":".join(str(arg) for arg in self.args)
 
@@ -324,7 +324,7 @@ def dimension(*args):
             parameters.append(Extent(*arg))
         else:
             parameters.append(sympify(arg))
-    if len(args) == 0:
+    if not len(args):
         raise ValueError("Need at least one dimension")
     return Attribute('dimension', parameters)
 
@@ -340,7 +340,7 @@ def array(symbol, dim, intent=None, *, attrs=(), value=None, type=None):
     symbol : symbol
     dim : Attribute or iterable
         If dim is an ``Attribute`` it need to have the name 'dimension'. If it is
-        not an ``Attribute``, then it is passsed to :func:`dimension` as ``*dim``
+        not an ``Attribute``, then it is passed to :func:`dimension` as ``*dim``
     intent : str
         One of: 'in', 'out', 'inout' or None
     \\*\\*kwargs:
