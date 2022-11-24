@@ -62,10 +62,14 @@ def _naive_list_centralizer(self, other, af=False):
     """
     from sympy.combinatorics.permutations import _af_commutes_with
     if hasattr(other, 'generators'):
-        elements , gens  = list(self.generate_dimino(af=True)), [x._array_form for x in other.generators]
-        commutes_with_gens , centralizer_list  = lambda x: all((_af_commutes_with(x, gen) for gen in gens)), []
+        elements = list(self.generate_dimino(af=True))
+        gens = [x._array_form for x in other.generators]
+        commutes_with_gens = lambda x: all(_af_commutes_with(x, gen) for gen in gens)
+        centralizer_list = []
         if not af:
-            centralizer_list = [Permutation._af_new(element) for element in elements if commutes_with_gens(element)]
+            for element in elements:
+                if commutes_with_gens(element):
+                    centralizer_list.append(Permutation._af_new(element))
         else:
             for element in elements:
                 if commutes_with_gens(element):
@@ -106,7 +110,8 @@ def _verify_bsgs(group, base, gens):
 
     """
     from sympy.combinatorics.perm_groups import PermutationGroup
-    strong_gens_distr , current_stabilizer  = _distribute_gens_by_base(base, gens), group
+    strong_gens_distr = _distribute_gens_by_base(base, gens)
+    current_stabilizer = group
     for i in range(len(base)):
         candidate = PermutationGroup(strong_gens_distr[i])
         if current_stabilizer.order() != candidate.order():
@@ -148,7 +153,8 @@ def _verify_centralizer(group, arg, centr=None):
     """
     if centr is None:
         centr = group.centralizer(arg)
-    centr_list , centr_list_naive  = list(centr.generate_dimino(af=True)), _naive_list_centralizer(group, arg, af=True)
+    centr_list = list(centr.generate_dimino(af=True))
+    centr_list_naive = _naive_list_centralizer(group, arg, af=True)
     return _cmp_perm_lists(centr_list, centr_list_naive)
 
 
@@ -179,13 +185,16 @@ def _verify_normal_closure(group, arg, closure=None):
     """
     if closure is None:
         closure = group.normal_closure(arg)
+    conjugates = set()
     if hasattr(arg, 'generators'):
         subgr_gens = arg.generators
     elif hasattr(arg, '__getitem__'):
         subgr_gens = arg
     elif hasattr(arg, 'array_form'):
         subgr_gens = [arg]
-    conjugates = {gen ^ el for el in group.generate_dimino() for gen in subgr_gens}
+    for el in group.generate_dimino():
+        for gen in subgr_gens:
+            conjugates.add(gen ^ el)
     naive_closure = PermutationGroup(list(conjugates))
     return closure.is_subgroup(naive_closure)
 
@@ -210,7 +219,7 @@ def canonicalize_naive(g, dummies, sym, *v):
     msym : Symmetry of the metric.
     v : A list of (base_i, gens_i, n_i, sym_i) for tensors of type `i`.
         base_i, gens_i BSGS for tensors of this type
-        n_i  number ot tensors of type `i`
+        n_i  number of tensors of type `i`
 
     Returns
     =======
@@ -239,14 +248,19 @@ def canonicalize_naive(g, dummies, sym, *v):
     size, sbase, sgens = gens_products(*v1)
     dgens = dummy_sgs(dummies, sym, size-2)
     if isinstance(sym, int):
-        num_types , dummies , sym  = 1, [dummies], [sym]
+        num_types = 1
+        dummies = [dummies]
+        sym = [sym]
     else:
         num_types = len(sym)
     dgens = []
     for i in range(num_types):
         dgens.extend(dummy_sgs(dummies[i], sym[i], size - 2))
-    S , D  = PermutationGroup(sgens), PermutationGroup([Permutation(x) for x in dgens])
-    dlist , g , st  = list(D.generate(af=True)), g.array_form, set()
+    S = PermutationGroup(sgens)
+    D = PermutationGroup([Permutation(x) for x in dgens])
+    dlist = list(D.generate(af=True))
+    g = g.array_form
+    st = set()
     for s in S.generate(af=True):
         h = _af_rmul(g, s)
         for d in dlist:
@@ -303,16 +317,18 @@ def graph_certificate(gr):
     items = list(gr.items())
     items.sort(key=lambda x: len(x[1]), reverse=True)
     pvert = [x[0] for x in items]
-    pvert , num_indices  = _af_invert(pvert), 0
+    pvert = _af_invert(pvert)
 
     # the indices of the tensor are twice the number of lines of the graph
+    num_indices = 0
     for v, neigh in items:
         num_indices += len(neigh)
     # associate to each vertex its indices; for each line
     # between two vertices assign the
     # even index to the vertex which comes first in items,
     # the odd index to the other vertex
-    vertices , i  = [[] for i in items], 0
+    vertices = [[] for i in items]
+    i = 0
     for v, neigh in items:
         for v2 in neigh:
             if pvert[v] < pvert[v2]:
@@ -326,7 +342,8 @@ def graph_certificate(gr):
     g += [num_indices, num_indices + 1]
     size = num_indices + 2
     assert sorted(g) == list(range(size))
-    g , vlen  = Permutation(g), [0] * (len(vertices[0]) + 1)
+    g = Permutation(g)
+    vlen = [0]*(len(vertices[0])+1)
     for neigh in vertices:
         vlen[len(neigh)] += 1
     v = []
