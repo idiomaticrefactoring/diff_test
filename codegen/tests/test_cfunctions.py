@@ -10,7 +10,7 @@ from sympy.core.function import expand_log
 
 def test_expm1():
     # Eval
-    assert not expm1(0)
+    assert expm1(0) == 0
 
     x = Symbol('x', real=True)
 
@@ -28,22 +28,22 @@ def test_expm1():
     assert expm1(x).is_finite
 
     # Diff
-    assert not expm1(42 * x).diff(x) - 42 * exp(42 * x)
-    assert not expm1(42 * x).diff(x) - expm1(42 * x).expand(func=True).diff(x)
+    assert expm1(42*x).diff(x) - 42*exp(42*x) == 0
+    assert expm1(42*x).diff(x) - expm1(42*x).expand(func=True).diff(x) == 0
 
 
 def test_log1p():
     # Eval
-    assert not log1p(0)
+    assert log1p(0) == 0
     d = S(10)
-    assert not expand_log(log1p(d ** (-1000)) - log(d ** 1000 + 1) + log(d ** 1000))
+    assert expand_log(log1p(d**-1000) - log(d**1000 + 1) + log(d**1000)) == 0
 
     x = Symbol('x', real=True)
 
     # Expand and rewrite
-    assert not log1p(x).expand(func=True) - log(x + 1)
-    assert not log1p(x).rewrite('tractable') - log(x + 1)
-    assert not log1p(x).rewrite('log') - log(x + 1)
+    assert log1p(x).expand(func=True) - log(x + 1) == 0
+    assert log1p(x).rewrite('tractable') - log(x + 1) == 0
+    assert log1p(x).rewrite('log') - log(x + 1) == 0
 
     # Precision
     assert not abs(log(1e-99 + 1).evalf() - 1e-99) < 1e-100  # for comparison
@@ -65,8 +65,8 @@ def test_log1p():
     assert log1p(Symbol('o', nonnegative=True)).is_nonnegative
 
     # Diff
-    assert not log1p(42 * x).diff(x) - 42 / (42 * x + 1)
-    assert not log1p(42 * x).diff(x) - log1p(42 * x).expand(func=True).diff(x)
+    assert log1p(42*x).diff(x) - 42/(42*x + 1) == 0
+    assert log1p(42*x).diff(x) - log1p(42*x).expand(func=True).diff(x) == 0
 
 
 def test_exp2():
@@ -76,11 +76,11 @@ def test_exp2():
     x = Symbol('x', real=True)
 
     # Expand
-    assert not exp2(x).expand(func=True) - 2 ** x
+    assert exp2(x).expand(func=True) - 2**x == 0
 
     # Diff
-    assert not exp2(42 * x).diff(x) - 42 * exp2(42 * x) * log(2)
-    assert not exp2(42 * x).diff(x) - exp2(42 * x).diff(x)
+    assert exp2(42*x).diff(x) - 42*exp2(42*x)*log(2) == 0
+    assert exp2(42*x).diff(x) - exp2(42*x).diff(x) == 0
 
 
 def test_log2():
@@ -93,73 +93,73 @@ def test_log2():
     assert log2(2**x) == x
 
     # Expand
-    assert not log2(x).expand(func=True) - log(x) / log(2)
+    assert log2(x).expand(func=True) - log(x)/log(2) == 0
 
     # Diff
-    assert not log2(42 * x).diff() - 1 / (log(2) * x)
-    assert not log2(42 * x).diff() - log2(42 * x).expand(func=True).diff(x)
+    assert log2(42*x).diff() - 1/(log(2)*x) == 0
+    assert log2(42*x).diff() - log2(42*x).expand(func=True).diff(x) == 0
 
 
 def test_fma():
     x, y, z = symbols('x y z')
 
     # Expand
-    assert not fma(x, y, z).expand(func=True) - x * y - z
+    assert fma(x, y, z).expand(func=True) - x*y - z == 0
 
     expr = fma(17*x, 42*y, 101*z)
 
     # Diff
-    assert not expr.diff(x) - expr.expand(func=True).diff(x)
-    assert not expr.diff(y) - expr.expand(func=True).diff(y)
-    assert not expr.diff(z) - expr.expand(func=True).diff(z)
+    assert expr.diff(x) - expr.expand(func=True).diff(x) == 0
+    assert expr.diff(y) - expr.expand(func=True).diff(y) == 0
+    assert expr.diff(z) - expr.expand(func=True).diff(z) == 0
 
-    assert not expr.diff(x) - 17 * 42 * y
-    assert not expr.diff(y) - 17 * 42 * x
-    assert not expr.diff(z) - 101
+    assert expr.diff(x) - 17*42*y == 0
+    assert expr.diff(y) - 17*42*x == 0
+    assert expr.diff(z) - 101 == 0
 
 
 def test_log10():
     x = Symbol('x')
 
     # Expand
-    assert not log10(x).expand(func=True) - log(x) / log(10)
+    assert log10(x).expand(func=True) - log(x)/log(10) == 0
 
     # Diff
-    assert not log10(42 * x).diff(x) - 1 / (log(10) * x)
-    assert not log10(42 * x).diff(x) - log10(42 * x).expand(func=True).diff(x)
+    assert log10(42*x).diff(x) - 1/(log(10)*x) == 0
+    assert log10(42*x).diff(x) - log10(42*x).expand(func=True).diff(x) == 0
 
 
 def test_Cbrt():
     x = Symbol('x')
 
     # Expand
-    assert not Cbrt(x).expand(func=True) - x ** Rational(1, 3)
+    assert Cbrt(x).expand(func=True) - x**Rational(1, 3) == 0
 
     # Diff
-    assert not Cbrt(42 * x).diff(x) - 42 * (42 * x) ** (Rational(1, 3) - 1) / 3
-    assert not Cbrt(42 * x).diff(x) - Cbrt(42 * x).expand(func=True).diff(x)
+    assert Cbrt(42*x).diff(x) - 42*(42*x)**(Rational(1, 3) - 1)/3 == 0
+    assert Cbrt(42*x).diff(x) - Cbrt(42*x).expand(func=True).diff(x) == 0
 
 
 def test_Sqrt():
     x = Symbol('x')
 
     # Expand
-    assert not Sqrt(x).expand(func=True) - x ** S.Half
+    assert Sqrt(x).expand(func=True) - x**S.Half == 0
 
     # Diff
-    assert not Sqrt(42 * x).diff(x) - 42 * (42 * x) ** (S.Half - 1) / 2
-    assert not Sqrt(42 * x).diff(x) - Sqrt(42 * x).expand(func=True).diff(x)
+    assert Sqrt(42*x).diff(x) - 42*(42*x)**(S.Half - 1)/2 == 0
+    assert Sqrt(42*x).diff(x) - Sqrt(42*x).expand(func=True).diff(x) == 0
 
 
 def test_hypot():
     x, y = symbols('x y')
 
     # Expand
-    assert not hypot(x, y).expand(func=True) - (x ** 2 + y ** 2) ** S.Half
+    assert hypot(x, y).expand(func=True) - (x**2 + y**2)**S.Half == 0
 
     # Diff
-    assert not hypot(17 * x, 42 * y).diff(x).expand(func=True) - hypot(17 * x, 42 * y).expand(func=True).diff(x)
-    assert not hypot(17 * x, 42 * y).diff(y).expand(func=True) - hypot(17 * x, 42 * y).expand(func=True).diff(y)
+    assert hypot(17*x, 42*y).diff(x).expand(func=True) - hypot(17*x, 42*y).expand(func=True).diff(x) == 0
+    assert hypot(17*x, 42*y).diff(y).expand(func=True) - hypot(17*x, 42*y).expand(func=True).diff(y) == 0
 
-    assert not hypot(17 * x, 42 * y).diff(x).expand(func=True) - 2 * 17 * 17 * x * ((17 * x) ** 2 + (42 * y) ** 2) ** Rational(-1, 2) / 2
-    assert not hypot(17 * x, 42 * y).diff(y).expand(func=True) - 2 * 42 * 42 * y * ((17 * x) ** 2 + (42 * y) ** 2) ** Rational(-1, 2) / 2
+    assert hypot(17*x, 42*y).diff(x).expand(func=True) - 2*17*17*x*((17*x)**2 + (42*y)**2)**Rational(-1, 2)/2 == 0
+    assert hypot(17*x, 42*y).diff(y).expand(func=True) - 2*42*42*y*((17*x)**2 + (42*y)**2)**Rational(-1, 2)/2 == 0

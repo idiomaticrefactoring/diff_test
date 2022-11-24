@@ -199,8 +199,8 @@ class Token(CodegenAST):
     @classmethod
     def _construct(cls, attr, arg):
         """ Construct an attribute value from argument passed to ``__new__()``. """
-        # arg may be ``NoneToken()``, so comparison is done using == instead of ``is`` operator
-        if not arg:
+        # arg may be ``NoneToken()``, so comparation is done using == instead of ``is`` operator
+        if arg == None:
             return cls.defaults.get(attr, none)
         else:
             if isinstance(arg, Dummy):  # SymPy's replace uses Dummy instances
@@ -290,8 +290,11 @@ class Token(CodegenAST):
 
     def _sympyrepr(self, printer, *args, joiner=', ', **kwargs):
         from sympy.printing.printer import printer_context
-        exclude , values , indent_level , arg_reprs  = kwargs.get('exclude', ()), [getattr(self, k) for k in self._fields], printer._context.get('indent_level', 0), []
+        exclude = kwargs.get('exclude', ())
+        values = [getattr(self, k) for k in self._fields]
+        indent_level = printer._context.get('indent_level', 0)
 
+        arg_reprs = []
 
         for i, (attr, value) in enumerate(zip(self._fields, values)):
             if attr in exclude:
@@ -407,7 +410,8 @@ class AssignmentBase(CodegenAST):
     """
 
     def __new__(cls, lhs, rhs):
-        lhs , rhs  = _sympify(lhs), _sympify(rhs)
+        lhs = _sympify(lhs)
+        rhs = _sympify(rhs)
 
         cls._check_args(lhs, rhs)
 
@@ -441,7 +445,8 @@ class AssignmentBase(CodegenAST):
         # Indexed types implement shape, but don't define it until later. This
         # causes issues in assignment validation. For now, matrices are defined
         # as anything with a shape that is not an Indexed
-        lhs_is_mat , rhs_is_mat  = hasattr(lhs, 'shape') and (not isinstance(lhs, Indexed)), hasattr(rhs, 'shape') and (not isinstance(rhs, Indexed))
+        lhs_is_mat = hasattr(lhs, 'shape') and not isinstance(lhs, Indexed)
+        rhs_is_mat = hasattr(rhs, 'shape') and not isinstance(rhs, Indexed)
 
         # If lhs and rhs have same structure, then this assignment is ok
         if lhs_is_mat:
@@ -625,7 +630,8 @@ class CodeBlock(CodegenAST):
 
     """
     def __new__(cls, *args):
-        left_hand_sides , right_hand_sides  = [], []
+        left_hand_sides = []
+        right_hand_sides = []
         for i in args:
             if isinstance(i, Assignment):
                 lhs, rhs = i.args
@@ -634,7 +640,8 @@ class CodeBlock(CodegenAST):
 
         obj = CodegenAST.__new__(cls, *args)
 
-        obj.left_hand_sides , obj.right_hand_sides  = Tuple(*left_hand_sides), Tuple(*right_hand_sides)
+        obj.left_hand_sides = Tuple(*left_hand_sides)
+        obj.right_hand_sides = Tuple(*right_hand_sides)
         return obj
 
     def __iter__(self):
@@ -715,10 +722,11 @@ class CodeBlock(CodegenAST):
         # enumerate keeps nodes in the same order they are already in if
         # possible. It will also allow us to handle duplicate assignments to
         # the same variable when those are implemented.
-        A , var_map  = list(enumerate(assignments)), defaultdict(list)
+        A = list(enumerate(assignments))
 
         # var_map = {variable: [nodes for which this variable is assigned to]}
         # like {x: [(1, x := y + z), (4, x := 2 * w)], ...}
+        var_map = defaultdict(list)
         for node in A:
             i, a = node
             var_map[a.lhs].append(node)
@@ -794,7 +802,9 @@ class CodeBlock(CodegenAST):
             symbols=symbols, optimizations=optimizations, postprocess=postprocess,
             order=order)
 
-        new_block , new_assignments  = [Assignment(var, expr) for (var, expr) in zip(self.left_hand_sides, reduced_exprs)], [Assignment(var, expr) for (var, expr) in replacements]
+        new_block = [Assignment(var, expr) for var, expr in
+            zip(self.left_hand_sides, reduced_exprs)]
+        new_assignments = [Assignment(var, expr) for var, expr in replacements]
         return self.topological_sort(new_assignments + new_block)
 
 
@@ -1105,8 +1115,10 @@ class Type(Token):
         0.123456789012345649
 
         """
-        val , ten , exp10  = sympify(value), Integer(10), getattr(self, 'decimal_dig', None)
+        val = sympify(value)
 
+        ten = Integer(10)
+        exp10 = getattr(self, 'decimal_dig', None)
 
         if rtol is None:
             rtol = 1e-15 if exp10 is None else 2.0*ten**(-exp10)
@@ -1125,7 +1137,8 @@ class Type(Token):
 
     def _latex(self, printer):
         from sympy.printing.latex import latex_escape
-        type_name , name  = latex_escape(self.__class__.__name__), latex_escape(self.name.text)
+        type_name = latex_escape(self.__class__.__name__)
+        name = latex_escape(self.name.text)
         return r"\text{{{}}}\left(\texttt{{{}}}\right)".format(type_name, name)
 
 
@@ -1779,7 +1792,7 @@ class FunctionPrototype(Node):
     @classmethod
     def from_FunctionDefinition(cls, func_def):
         if not isinstance(func_def, FunctionDefinition):
-            raise TypeError("func_def is not an instance of FunctionDefinition")
+            raise TypeError("func_def is not an instance of FunctionDefiniton")
         return cls(**func_def.kwargs(exclude=('body',)))
 
 
