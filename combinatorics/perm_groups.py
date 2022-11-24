@@ -1947,7 +1947,7 @@ class PermutationGroup(Basic):
             The criterion for the incorrect ``False`` return.
 
         perms : list[Permutation], optional
-            If explicitly given, it tests over the given candidates
+            If explicitly given, it tests over the given candidats
             for testing.
 
             If ``None``, it randomly computes ``N_eps`` and chooses
